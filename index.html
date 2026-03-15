@@ -210,11 +210,11 @@
       display: block;
     }
 
-    /* MOVED: Centered at top instead of top-left */
+    /* Centered at top */
     .admin-badge {
       position: absolute;
       top: 20px;
-      left: 45%;
+      left: 50%;
       transform: translateX(-50%);
       padding: 8px 16px;
       border-radius: 999px;
@@ -407,7 +407,6 @@
   <div class="bg-overlay"></div>
 
   <div class="card" id="card">
-    <!-- MOVED: Centered at top instead of top-left -->
     <div class="admin-badge" id="adminBadge">ADMIN</div>
     
     <button class="back-btn" id="backBtn" onclick="showMainContent()">← Back</button>
@@ -512,9 +511,15 @@
       }, 400);
     });
 
+    // FIXED: Reset auth-content styles when showing auth mode
     function showAuthMode() {
       const card = document.getElementById('card');
       const mainContent = document.getElementById('mainContent');
+      const authContent = document.getElementById('authContent');
+      
+      // Reset auth-content styles before showing
+      authContent.style.opacity = '';
+      authContent.style.transform = '';
       
       mainContent.style.opacity = '0';
       mainContent.style.transform = 'translateY(-20px)';
@@ -525,10 +530,15 @@
       }, 300);
     }
 
+    // FIXED: Reset main-content styles when going back
     function showMainContent() {
       const card = document.getElementById('card');
       const mainContent = document.getElementById('mainContent');
       const authContent = document.getElementById('authContent');
+      
+      // Reset main-content styles before showing
+      mainContent.style.opacity = '';
+      mainContent.style.transform = '';
       
       authContent.style.opacity = '0';
       authContent.style.transform = 'translateY(20px)';
