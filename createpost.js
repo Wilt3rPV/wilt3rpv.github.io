@@ -1,11 +1,11 @@
 let bannerInput = null;
 let preview = null;
 let collegeFromUrl = null;
+let selectedImage = null;
 
 const params = new URLSearchParams(window.location.search);
 const editId = params.get("edit");
 
-// Remove: let posts = JSON.parse(localStorage.getItem("posts")) || [];
 let editPost = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -31,10 +31,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // Handle edit mode - fetch from Supabase
   if (editId) {
     await loadEditPost(editId, preview);
   }
+
+  setupEditorImageHandler();
 });
 
 async function loadEditPost(id, preview) {
@@ -67,6 +68,163 @@ async function loadEditPost(id, preview) {
   }
 }
 
+// Insert image with LIMITED SIZE
+function insertImage(input) {
+  if (!input.files || !input.files[0]) return;
+  
+  const file = input.files[0];
+  const reader = new FileReader();
+  
+  reader.onload = function(e) {
+    const imgData = e.target.result;
+    const editor = document.getElementById('editor');
+    
+    // Create image element with LIMITED SIZE
+    const img = document.createElement('img');
+    img.src = imgData;
+    img.style.maxWidth = '500px';   // Limit width
+    img.style.maxHeight = '500px';  // Limit height
+    img.style.width = 'auto';
+    img.style.height = 'auto';
+    img.style.objectFit = 'contain';
+    img.style.borderRadius = '8px';
+    img.style.margin = '10px 0';
+    img.style.display = 'block';
+    img.dataset.filename = file.name;
+    
+    insertNodeAtCursor(img);
+    
+    // Add line break after image
+    const br = document.createElement('br');
+    insertNodeAtCursor(br);
+    
+    input.value = '';
+  };
+  
+  reader.readAsDataURL(file);
+}
+
+function insertNodeAtCursor(node) {
+  const editor = document.getElementById('editor');
+  editor.focus();
+  
+  const sel = window.getSelection();
+  if (sel.rangeCount > 0) {
+    const range = sel.getRangeAt(0);
+    
+    if (!editor.contains(range.commonAncestorContainer)) {
+      editor.appendChild(node);
+      return;
+    }
+    
+    range.deleteContents();
+    range.insertNode(node);
+    
+    range.setStartAfter(node);
+    range.setEndAfter(node);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  } else {
+    editor.appendChild(node);
+  }
+}
+
+// Add to setupEditorImageHandler function:
+
+function setupEditorImageHandler() {
+  const editor = document.getElementById('editor');
+  const deleteBtn = document.getElementById('deleteImgBtn');
+  
+  // Click to select
+  editor.addEventListener('click', function(e) {
+    if (e.target.tagName === 'IMG') {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      if (selectedImage) {
+        selectedImage.classList.remove('selected');
+      }
+      
+      selectedImage = e.target;
+      selectedImage.classList.add('selected');
+      deleteBtn.style.display = 'inline-block';
+    } else {
+      // Clicked elsewhere, deselect
+      if (selectedImage) {
+        selectedImage.classList.remove('selected');
+        selectedImage = null;
+        deleteBtn.style.display = 'none';
+      }
+    }
+  });
+  
+  // Double-click to preview
+  editor.addEventListener('dblclick', function(e) {
+    if (e.target.tagName === 'IMG') {
+      e.preventDefault();
+      openImagePreview(e.target.src);
+    }
+  });
+  
+  // RIGHT-CLICK to delete (context menu)
+  editor.addEventListener('contextmenu', function(e) {
+    if (e.target.tagName === 'IMG') {
+      e.preventDefault(); // Block normal right-click menu
+      
+      if (confirm('Delete this image?')) {
+        e.target.parentNode.removeChild(e.target);
+        selectedImage = null;
+        deleteBtn.style.display = 'none';
+      }
+    }
+  });
+  
+  // DELETE KEY to remove selected image
+  document.addEventListener('keydown', function(e) {
+    if ((e.key === 'Delete' || e.key === 'Backspace') && selectedImage) {
+      e.preventDefault();
+      selectedImage.parentNode.removeChild(selectedImage);
+      selectedImage = null;
+      deleteBtn.style.display = 'none';
+    }
+  });
+}
+
+function deleteSelectedImage() {
+  if (selectedImage && selectedImage.parentNode) {
+    selectedImage.parentNode.removeChild(selectedImage);
+    selectedImage = null;
+    document.getElementById('deleteImgBtn').style.display = 'none';
+  }
+}
+
+function openImagePreview(src) {
+  const modal = document.getElementById('imagePreviewModal');
+  const img = document.getElementById('previewModalImg');
+  
+  img.src = src;
+  modal.classList.add('visible');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeImagePreview() {
+  const modal = document.getElementById('imagePreviewModal');
+  const img = document.getElementById('previewModalImg');
+  
+  modal.classList.remove('visible');
+  img.src = '';
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('imagePreviewModal');
+    if (modal.classList.contains('visible')) {
+      closeImagePreview();
+    }
+  }
+});
+
 async function createPost() {
   const selectedCollege = document.getElementById("collegeSelect").value;
   const title = document.getElementById('title').value;
@@ -79,7 +237,6 @@ async function createPost() {
   }
 
   if (editPost) {
-    // Update existing post
     const updates = {
       college: selectedCollege,
       title: title,
@@ -98,7 +255,6 @@ async function createPost() {
       await updatePost(editPost.id, updates);
     }
   } else {
-    // Create new post
     const post = {
       college: selectedCollege,
       title: title,
@@ -155,7 +311,6 @@ async function updatePost(id, updates) {
   });
 }
 
-// Text editor functions remain the same
 function formatText(command) {
   document.execCommand(command, false, null);
   updateToolbarState();

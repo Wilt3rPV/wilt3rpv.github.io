@@ -348,9 +348,14 @@ async function showPostModal(postId) {
             <button onclick="deletePost(${post.id})">Delete Post</button>
           ` : '';
           
+          // Add clickable class to banner if it exists
+          const bannerHtml = post.banner ? 
+            `<img src="${post.banner}" class="post-banner clickable" onclick="openImageOverlay('${post.banner}')" title="Click to view full size">` : 
+            "";
+          
           content.innerHTML = `
             <div class="post-loaded">
-              ${post.banner ? `<img src="${post.banner}" class="post-banner">` : ""}
+              ${bannerHtml}
               <h2>${post.title}</h2>
               <small class="post-date">${post.date}</small>
               <p>${post.content.replace(/\n/g, "<br>")}</p>

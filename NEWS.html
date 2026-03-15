@@ -41,6 +41,106 @@
         gap: 10px;
         align-items: center;
       }
+
+      /* Full image overlay */
+      .image-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100001;
+        cursor: zoom-out;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease, background 0.3s ease;
+      }
+
+      .image-overlay.visible {
+        opacity: 1;
+        pointer-events: auto;
+        background: rgba(0, 0, 0, 0.9);
+      }
+
+      /* Image starts tiny */
+      .image-overlay img {
+        max-width: 95vw;
+        max-height: 95vh;
+        object-fit: contain;
+        border-radius: 8px;
+        cursor: default;
+        transform: scale(0.1);
+        opacity: 0;
+        transition: none; /* No transition initially */
+      }
+
+      /* POP OUT ANIMATION when visible */
+      .image-overlay.visible img {
+        transform: scale(1);
+        opacity: 1;
+        transition: transform 0.5s cubic-bezier(0.34, 1.30, 0.20, 1), 
+                    opacity 0.4s ease;
+      }
+
+      /* Closing animation */
+      .image-overlay.closing {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .image-overlay.closing img {
+        transform: scale(0.1);
+        opacity: 0;
+        transition: transform 0.3s ease-in, opacity 0.2s ease;
+      }
+
+      .image-overlay-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: #fff;
+        font-size: 24px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transform: scale(0.5);
+        transition: all 0.3s ease;
+      }
+
+      .image-overlay.visible .image-overlay-close {
+        opacity: 1;
+        transform: scale(1);
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s;
+      }
+
+      .image-overlay.closing .image-overlay-close {
+        opacity: 0;
+        transform: scale(0.5);
+        transition: all 0.2s ease;
+      }
+
+      .image-overlay-close:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+      }
+
+      /* Clickable banner */
+      .post-banner.clickable {
+        cursor: zoom-in;
+        transition: transform 0.2s ease;
+      }
+
+      .post-banner.clickable:hover {
+        transform: scale(1.02);
+      }
     </style>
   </head>
   <body>
@@ -92,6 +192,7 @@
       <div class="banner-divider-bottom"></div>
     </div>
 
+    <!-- Post Modal -->
     <div id="postModal" class="post-modal hidden">
       <div class="post-modal-backdrop" onclick="closePostModal()"></div>
 
@@ -99,6 +200,12 @@
         <button class="post-modal-close" onclick="closePostModal()">X</button>
         <div id="postModalContent"></div>
       </div>
+    </div>
+
+    <!-- Full Image Overlay -->
+    <div id="imageOverlay" class="image-overlay">
+      <button class="image-overlay-close" onclick="closeImageOverlay()">×</button>
+      <img id="fullImage" src="" alt="" onclick="event.stopPropagation()">
     </div>
 
     
@@ -133,13 +240,11 @@
         const adminElements = document.querySelectorAll('.admin-only');
 
         if (user && admin) {
-          // Show admin features
           createBtn.classList.add('visible');
           logoutBtn.classList.add('visible');
           addCalendarBtn.classList.add('visible');
           loginBtn.classList.add('hidden');
         } else {
-          // Hide admin features
           createBtn.classList.remove('visible');
           logoutBtn.classList.remove('visible');
           addCalendarBtn.classList.remove('visible');
@@ -149,13 +254,65 @@
 
       async function handleLogout() {
         await signOut();
-        // Reload page to refresh UI
         window.location.reload();
       }
 
       function goToLogin() {
         window.location.href = 'index.html';
       }
+
+      // Image overlay with pop-out animation
+      function openImageOverlay(imageSrc) {
+        const overlay = document.getElementById('imageOverlay');
+        const fullImage = document.getElementById('fullImage');
+        
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+        
+        // Set image source
+        fullImage.src = imageSrc;
+        
+        // Remove any closing class, add visible
+        overlay.classList.remove('closing');
+        overlay.classList.add('visible');
+      }
+
+      function closeImageOverlay() {
+        const overlay = document.getElementById('imageOverlay');
+        const fullImage = document.getElementById('fullImage');
+        
+        // Add closing class for exit animation
+        overlay.classList.add('closing');
+        overlay.classList.remove('visible');
+        
+        // Wait for animation to finish then cleanup
+        setTimeout(() => {
+          overlay.classList.remove('closing');
+          fullImage.src = '';
+          document.body.style.overflow = '';
+        }, 350);
+      }
+
+      // Escape key to close
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          const overlay = document.getElementById('imageOverlay');
+          if (overlay.classList.contains('visible')) {
+            closeImageOverlay();
+          }
+          const postModal = document.getElementById('postModal');
+          if (postModal.classList.contains('show')) {
+            closePostModal();
+          }
+        }
+      });
+
+      // Click background to close
+      document.getElementById('imageOverlay').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeImageOverlay();
+        }
+      });
 
       initAuth();
     </script>

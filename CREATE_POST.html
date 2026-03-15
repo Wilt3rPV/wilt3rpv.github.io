@@ -7,6 +7,124 @@
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="database.js"></script>
+    <style>
+      /* Image upload styles */
+      .image-upload-btn {
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .image-upload-btn input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      /* Content image in editor - LIMITED SIZE */
+      .editor img {
+        max-width: 500px !important;  /* Maximum width */
+        max-height: 500px !important; /* Maximum height */
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        border-radius: 8px;
+        margin: 10px 0;
+        cursor: pointer;
+        display: block;
+      }
+
+      /* Image hover effect in editor */
+      .editor img:hover {
+        box-shadow: 0 0 0 3px rgba(124, 132, 140, 0.5);
+      }
+
+      /* Selected image in editor */
+      .editor img.selected {
+        box-shadow: 0 0 0 3px #7c848c;
+      }
+
+      /* Image preview modal - FULL SIZE */
+      .image-preview-modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.9);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 100002;
+        cursor: zoom-out;
+      }
+
+      .image-preview-modal.visible {
+        display: flex;
+      }
+
+      .image-preview-modal img {
+        max-width: 95vw;
+        max-height: 95vh;
+        object-fit: contain;
+        border-radius: 8px;
+        transform: scale(0.1);
+        opacity: 0;
+        transition: none;
+      }
+
+      .image-preview-modal.visible img {
+        transform: scale(1);
+        opacity: 1;
+        transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                    opacity 0.4s ease;
+      }
+
+      .image-preview-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: #fff;
+        font-size: 24px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transform: scale(0.5);
+        transition: all 0.3s ease;
+      }
+
+      .image-preview-modal.visible .image-preview-close {
+        opacity: 1;
+        transform: scale(1);
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s;
+      }
+
+      .image-preview-close:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+      }
+
+      .editor-toolbar {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+
+      .editor-toolbar button {
+        padding: 8px 12px;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .editor-toolbar button.active {
+        background: #c5c3c6;
+      }
+    </style>
   </head>
   <body>
     <div class="content">
@@ -27,10 +145,14 @@
             <button type="button" id="italicBtn" onclick="formatText('italic')"><i>I</i></button>
             <button type="button" id="underlineBtn" onclick="formatText('underline')"><u>U</u></button>
             <button type="button" onclick="addLink()">Link</button>
+            <button type="button" class="image-upload-btn" title="Insert Image">
+              📷 Image
+              <input type="file" accept="image/*" onchange="insertImage(this)">
+            </button>
+            <button type="button" onclick="deleteSelectedImage()" id="deleteImgBtn" style="display:none; background:#ff6b6b; color:white;">🗑️ Delete</button>
           </div>
 
           <div id="editor" class="editor" contenteditable="true" data-placeholder="Write the news content here"></div>
-          <!-- <textarea id="content" rows="6" placeholder="Write the news here"></textarea> -->
 
           <label>Banner Image</label>
           <img id="bannerPreview" style="max-width:100%; display:none;">
@@ -54,6 +176,11 @@
       <div class="banner-divider-bottom"></div>
     </div>
 
+    <!-- Image Preview Modal -->
+    <div id="imagePreviewModal" class="image-preview-modal" onclick="closeImagePreview()">
+      <button class="image-preview-close" onclick="closeImagePreview()">×</button>
+      <img id="previewModalImg" src="" alt="" onclick="event.stopPropagation()">
+    </div>
 
     <div id="confirmModal" class="confirm-modal hidden">
       <div class="confirm-panel">
@@ -69,9 +196,7 @@
       </div>
     </div>
 
-
     <script src="createpost.js"></script>
-
     <script src="news.js"></script>
   </body>
 </html>
