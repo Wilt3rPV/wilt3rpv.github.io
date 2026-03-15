@@ -1,0 +1,45 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNI-COL News</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="database.js"></script>
+    <style>
+      BODY {       
+        opacity: 0;
+        transform: translateX(20px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+      body.loaded {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      .btn {
+        width: 800px;
+      }
+      .admin-only { display: none; }
+      .admin-only.visible { display: inline-block; }
+    </style>
+  </head>
+  <body>
+    <div class="content">
+      <div class="banner-divider-top"></div>
+      <div class="inner-content">
+        <div id="post"></div>
+      </div>
+      <div class="banner-divider-bottom"></div>
+    </div>
+    <script src="post.js"></script>
+    <script src="functions.js"></script>
+    <script>
+      window.addEventListener('authStateChanged', (e) => {
+        const { user, isAdmin } = e.detail;
+        if (typeof updatePostUI === 'function') {
+          updatePostUI(user, isAdmin);
+        }
+      });
+      checkAuth();
+    </script>
+  </body>
+</html>

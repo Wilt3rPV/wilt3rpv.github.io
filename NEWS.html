@@ -1,0 +1,163 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNI-COL News</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="database.js"></script>
+    <style>
+      BODY {       
+        opacity: 0;
+        transform: translateY(-50px);
+        transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+      }
+      body.loaded {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .btn {
+        width: 800px;
+      }
+      /* Hide admin-only elements by default */
+      .admin-only {
+        display: none !important;
+      }
+      .admin-only.visible {
+        display: flex !important;
+      }
+      /* Logout button styling */
+      .logout-btn {
+        background: rgba(255, 100, 100, 0.9) !important;
+        color: #fff !important;
+        border: 1px solid rgba(0,0,0,.25);
+        margin-left: 10px;
+      }
+      .logout-btn:hover {
+        background: rgba(255, 80, 80, 1) !important;
+      }
+      /* Button group for admin actions */
+      .admin-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="banner-divider-top">
+      <br>
+      <h1 id="collegeName"></h1>
+      <div class="admin-actions">
+        <button class="createpost-btn admin-only" id="createPostBtn" onclick="goCreate()">Create Post</button>
+        <button class="createpost-btn logout-btn admin-only" id="logoutBtn" onclick="handleLogout()">Logout</button>
+        <button class="createpost-btn" id="adminLoginBtn" onclick="goToLogin()">Admin Login</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="inner-content">
+
+        <div class="news-toolbar">
+          <label for="yearFilter" class="year-filter-label">Sort by Year</label>
+          <select id="yearFilter">
+            <option value="all">All</option>
+          </select>
+        </div>
+
+        <div class="left-column">
+          <div class="news-search">
+            <label for="searchInput" class="search-label">Search</label>
+            <input type="text" id="searchInput" placeholder="..." />
+          </div>
+
+          <div id="news-container"></div>
+
+          <div id="pagination" class="pagination"></div>
+        </div>
+
+        <aside class="calendar-area">
+          <div class="calendar-card">
+            <div class="calendar-header">
+              <h2>Academic Calendar</h2>
+            </div>
+            
+            <div id="calendarRows" class="calendar-rows"></div>
+
+            <button id="addCalendarRowBtn" class="calendar-add admin-only">+ Add Row</button>
+          </div>
+        </aside>
+
+        
+      </div>
+
+      <div class="banner-divider-bottom"></div>
+    </div>
+
+    <div id="postModal" class="post-modal hidden">
+      <div class="post-modal-backdrop" onclick="closePostModal()"></div>
+
+      <div class="post-modal-panel">
+        <button class="post-modal-close" onclick="closePostModal()">X</button>
+        <div id="postModalContent"></div>
+      </div>
+    </div>
+
+    
+    <div id="confirmModal" class="confirm-modal hidden">
+      <div class="confirm-panel">
+        <p id="confirmText" class="confirm-text"></p>
+        <div class="confirm-buttons">
+          <button id="confirmYes">Yes</button>
+          <button id="confirmNo">No</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="news.js"></script>
+    <script src="functions.js"></script>
+    <script>
+      // Check auth and update UI
+      window.addEventListener('authStateChanged', (e) => {
+        const { user, isAdmin } = e.detail;
+        updateNewsUI(user, isAdmin);
+      });
+
+      async function initAuth() {
+        await checkAuth();
+      }
+
+      function updateNewsUI(user, admin) {
+        const createBtn = document.getElementById('createPostBtn');
+        const loginBtn = document.getElementById('adminLoginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const addCalendarBtn = document.getElementById('addCalendarRowBtn');
+        const adminElements = document.querySelectorAll('.admin-only');
+
+        if (user && admin) {
+          // Show admin features
+          createBtn.classList.add('visible');
+          logoutBtn.classList.add('visible');
+          addCalendarBtn.classList.add('visible');
+          loginBtn.classList.add('hidden');
+        } else {
+          // Hide admin features
+          createBtn.classList.remove('visible');
+          logoutBtn.classList.remove('visible');
+          addCalendarBtn.classList.remove('visible');
+          loginBtn.classList.remove('hidden');
+        }
+      }
+
+      async function handleLogout() {
+        await signOut();
+        // Reload page to refresh UI
+        window.location.reload();
+      }
+
+      function goToLogin() {
+        window.location.href = 'index.html';
+      }
+
+      initAuth();
+    </script>
+  </body>
+</html>

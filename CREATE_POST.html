@@ -1,0 +1,77 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a post</title>
+    <link rel="stylesheet" href="createpost.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="database.js"></script>
+  </head>
+  <body>
+    <div class="content">
+      <div class="banner-divider-top">
+        <br>
+        <h1>Create a Post</h1>
+      </div>
+      <div class="inner-content">
+        
+        <div class="post-form">
+
+          <label>Post Title</label>
+          <input type="text" id="title" placeholder="Enter Headline">
+
+          <label>Post Content</label>
+          <div class="editor-toolbar">
+            <button type="button" id="boldBtn" onclick="formatText('bold')"><b>B</b></button>
+            <button type="button" id="italicBtn" onclick="formatText('italic')"><i>I</i></button>
+            <button type="button" id="underlineBtn" onclick="formatText('underline')"><u>U</u></button>
+            <button type="button" onclick="addLink()">Link</button>
+          </div>
+
+          <div id="editor" class="editor" contenteditable="true" data-placeholder="Write the news content here"></div>
+          <!-- <textarea id="content" rows="6" placeholder="Write the news here"></textarea> -->
+
+          <label>Banner Image</label>
+          <img id="bannerPreview" style="max-width:100%; display:none;">
+          <input type="file" id="banner" accept="image/*">
+
+          <select id="collegeSelect">
+            <option value="prmsuIba">PRMSU IBA</option>
+            <option value="prmsuBotolan">PRMSU BOTOLAN</option>
+            <option value="macsatIba">MACSAT IBA</option>
+            <option value="ccGapo">CC OLONGAPO</option>
+            <option value="prmsuMan">PRMSU MASINLOC</option>
+            <option value="ccCruz">CC STA CRUZ</option>
+            <option value="lyceumBotolan">LYCEUM BOTOLAN</option>
+          </select>
+
+          <button onclick="createPost()">Publish</button>
+
+        </div>
+
+      </div>
+      <div class="banner-divider-bottom"></div>
+    </div>
+
+
+    <div id="confirmModal" class="confirm-modal hidden">
+      <div class="confirm-panel">
+
+        <p id="confirmText" class="confirm-text">
+        </p>
+
+        <div class="confirm-buttons">
+          <button id="confirmYes">OK</button>
+          <button id="confirmNo">Cancel</button>
+        </div>
+
+      </div>
+    </div>
+
+
+    <script src="createpost.js"></script>
+
+    <script src="news.js"></script>
+  </body>
+</html>

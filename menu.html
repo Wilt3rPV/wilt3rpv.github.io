@@ -1,0 +1,92 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNI-COL News</title>
+      <link rel="stylesheet" href="style.css">
+    <style>
+      .inner-content {
+        text-align: center;
+      }
+
+      body {
+        opacity: 0;
+        transform: translateY(-50px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+
+      body.loaded {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .btn1 {
+        background-image: url("SCfront2.png");
+      }
+
+      .btn2 {
+        background-image: url("prmsu.png");
+      }
+
+      .btn3 {
+        background-image: url("colom.png");
+      }
+
+      .btn4 {
+        background-image: url("prmsumas.png");
+      }
+
+      .btn5 {
+        background-image: url("colom2.png");
+      }
+
+      .btn6 {
+        background-image: url("lie.png");
+      }
+
+      .btn7 {
+        background-image: url("botolans.png");
+      }
+
+    </style>
+  </head>
+  <body class="college-picker">
+    <div class="banner-divider-top">
+      <br>  
+      <img src="final.png" width="300" height="110">
+    </div>
+    <div class="content">
+      <div class="inner-content">
+        <br>
+        <br>
+
+        <div class="college-container">
+          <button class="btn btn2" onclick="window.location.href='NEWS.html?college=prmsuIba'"><span>President Ramon Magsaysay<br>State University - Iba Campus</span></button>
+
+          <button class="btn btn1" onclick="window.location.href='NEWS.html?college=macsatIba'"><span>Mirco Asia College of Science<br>And Technology - Iba Campus</span></button>
+
+          <button class="btn btn7" onclick="window.location.href='NEWS.html?college=prmsuBotolan'"><span>President Ramon Magsaysay<br>State University - Botolan Campus</span></button>
+
+          <button class="btn btn3" onclick="window.location.href='NEWS.html?college=ccGapo'"><span>Columban College<br>- Olongapo Campus</span></button>
+
+          <button class="btn btn4" onclick="window.location.href='NEWS.html?college=prmsuMan'"><span>President Ramon Magsaysay<br>State University - Masinloc Campus</span></button>
+
+          <button class="btn btn5" onclick="window.location.href='NEWS.html?college=ccCruz'"><span>Columban College<br>- Sta. Cruz Campus</span></button>
+
+          <button class="btn btn6" onclick="window.location.href='NEWS.html?college=lyceumBotolan'"><span>Lyceum Of Western Luzon<br>- Botolan Campus</span></button>
+
+          <!-- <button class="btn"><span>College 8</span></button>
+
+          <button class="btn"><span>college 9</span></button>
+            
+          <button class="btn"><span>college 10</span></button>
+
+          <button class="btn"><span>college 11</span></button> -->
+        </div>
+
+
+      </div>
+      <div class="banner-divider-bottom"></div>
+    </div>
+    <script src="functions.js"></script>
+  </body>
+</html>
