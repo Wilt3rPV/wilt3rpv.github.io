@@ -207,6 +207,9 @@ p{
   margin:40px auto;
 }
 
+/* =========================
+   Post Card Load Animation
+   ========================= */
 .news-card{
   height:160px;
   margin-bottom:20px;
@@ -218,7 +221,36 @@ p{
   background-position:center;
   box-shadow:inset 0 0 150px rgba(0,0,0,.5);
   transition:background-position .35s ease;
+  
+  /* Animation properties */
+  opacity: 0;
+  transform: scale(0.96) translateY(10px);
+  animation: cardLoadIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
+
+/* Staggered animation delays for first 10 cards */
+.news-card:nth-child(1) { animation-delay: 0.05s; }
+.news-card:nth-child(2) { animation-delay: 0.1s; }
+.news-card:nth-child(3) { animation-delay: 0.15s; }
+.news-card:nth-child(4) { animation-delay: 0.2s; }
+.news-card:nth-child(5) { animation-delay: 0.25s; }
+.news-card:nth-child(6) { animation-delay: 0.3s; }
+.news-card:nth-child(7) { animation-delay: 0.35s; }
+.news-card:nth-child(8) { animation-delay: 0.4s; }
+.news-card:nth-child(9) { animation-delay: 0.45s; }
+.news-card:nth-child(10) { animation-delay: 0.5s; }
+
+@keyframes cardLoadIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 .news-card:hover{background-position:center -45px;}
 
 .news-overlay{
@@ -551,7 +583,7 @@ p{
   top: 40px;
   bottom: 40px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) scale(0.92);
   width: min(1000px, calc(100vw - 40px));
   background: #d9d9d9;
   border-radius: 14px;
@@ -559,31 +591,30 @@ p{
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 1;
-  animation: postModalIn 0.22s ease-out;
+  opacity: 0;
+  animation: postModalIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   
-  /* Contained scrollbar - appears inside the panel */
   scrollbar-width: 10px;
   scrollbar-color: rgba(0,0,0,0.3) rgba(0,0,0,0.05);
 }
 
-/* Webkit scrollbar - styled to look contained */
 .post-modal-panel::-webkit-scrollbar {
   width: 10px;
-  background: rgba(0,0,0,0.05); /* Track background visible */
-  border-radius: 0 14px 14px 0; /* Round right side to match panel */
+  background: rgba(0,0,0,0.05);
+  border-radius: 0 14px 14px 0;
 }
 
 .post-modal-panel::-webkit-scrollbar-track {
   background: rgba(0,0,0,0.05);
   border-radius: 0 14px 14px 0;
-  margin: 4px 4px 4px 0; /* Margin so track doesn't touch edges */
+  margin: 4px 4px 4px 0;
 }
 
 .post-modal-panel::-webkit-scrollbar-thumb {
   background: rgba(0,0,0,0.3);
   border-radius: 5px;
-  border: 2px solid rgba(0,0,0,0.05); /* Padding effect */
-  background-clip: padding-box; /* Keeps border as padding */
+  border: 2px solid rgba(0,0,0,0.05);
+  background-clip: padding-box;
   min-height: 40px;
 }
 
@@ -596,11 +627,11 @@ p{
 }
 
 .post-modal.closing .post-modal-panel {
-  animation: postModalOut 0.22s ease-in forwards;
+  animation: postModalOut 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .post-modal.closing .post-modal-backdrop {
-  animation: modalBackdropOut 0.22s ease-in forwards;
+  animation: modalBackdropOut 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .post-modal-close {
@@ -630,24 +661,24 @@ p{
 }
 
 @keyframes postModalIn {
-  from {
+  0% {
     opacity: 0;
-    transform: translateX(-50%) scale(0.92);
+    transform: translateX(-50%) scale(0.92) translateY(0px);
   }
-  to {
+  100% {
     opacity: 1;
-    transform: translateX(-50%) scale(1);
+    transform: translateX(-50%) scale(1) translateY(0);
   }
 }
 
 @keyframes postModalOut {
-  from {
+  0% {
     opacity: 1;
-    transform: translateX(-50%) scale(1);
+    transform: translateX(-50%) scale(1) translateY(0);
   }
-  to {
+  100% {
     opacity: 0;
-    transform: translateX(-50%) scale(0.92);
+    transform: translateX(-50%) scale(0.92) translateY(0px);
   }
 }
 
@@ -711,7 +742,7 @@ body.modal-open {
 
 .post-loading,
 .post-loaded {
-  animation: postCardPopIn 0.28s ease-out;
+  animation: postCardPopIn 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94)	;
   transform-origin: center center;
 }
 
@@ -725,7 +756,7 @@ body.modal-open {
 }
 
 .post-loading.fade-out {
-  animation: postLoadingOut 0.22s ease-in forwards;
+  animation: postLoadingOut 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94)	 forwards;
 }
 
 @keyframes postLoadingOut {

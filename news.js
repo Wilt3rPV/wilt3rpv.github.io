@@ -505,9 +505,13 @@ function renderPosts(postsToRender) {
   const end = start + POSTS_PER_PAGE;
   const paginatedPosts = postsToRender.slice(start, end);
 
-  paginatedPosts.forEach(post => {
+  paginatedPosts.forEach((post, index) => {
     const card = document.createElement("div");
     card.className = "news-card";
+    
+    // Reset animation
+    card.style.animation = 'none';
+    
     if (post.banner) {
       card.style.backgroundImage = `url(${post.banner})`;
     }
@@ -518,6 +522,14 @@ function renderPosts(postsToRender) {
     `;
     card.onclick = () => openPost(post.id);
     container.appendChild(card);
+    
+    // Trigger animation with cubic-bezier
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        card.style.animation = `cardLoadIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards`;
+        card.style.animationDelay = `${(index + 1) * 0.05}s`;
+      });
+    });
   });
 
   renderPagination(postsToRender);
