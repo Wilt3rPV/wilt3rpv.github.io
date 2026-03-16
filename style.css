@@ -510,7 +510,7 @@ p{
 }
 
 /* =========================
-   Post Modal
+   Post Modal - WITH CONTAINED SCROLLBAR
    ========================= */
 #postModalContent,
 #postModalContent p,
@@ -545,6 +545,7 @@ p{
   background: rgba(0, 0, 0, 0.35);
 }
 
+/* CONTAINED SCROLLBAR FIX */
 .post-modal-panel {
   position: absolute;
   top: 40px;
@@ -557,9 +558,41 @@ p{
   padding: 60px 24px 24px 24px;
   overflow-y: auto;
   overflow-x: hidden;
-  overscroll-behavior: contain;
   z-index: 1;
   animation: postModalIn 0.22s ease-out;
+  
+  /* Contained scrollbar - appears inside the panel */
+  scrollbar-width: 10px;
+  scrollbar-color: rgba(0,0,0,0.3) rgba(0,0,0,0.05);
+}
+
+/* Webkit scrollbar - styled to look contained */
+.post-modal-panel::-webkit-scrollbar {
+  width: 10px;
+  background: rgba(0,0,0,0.05); /* Track background visible */
+  border-radius: 0 14px 14px 0; /* Round right side to match panel */
+}
+
+.post-modal-panel::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.05);
+  border-radius: 0 14px 14px 0;
+  margin: 4px 4px 4px 0; /* Margin so track doesn't touch edges */
+}
+
+.post-modal-panel::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.3);
+  border-radius: 5px;
+  border: 2px solid rgba(0,0,0,0.05); /* Padding effect */
+  background-clip: padding-box; /* Keeps border as padding */
+  min-height: 40px;
+}
+
+.post-modal-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.5);
+}
+
+.post-modal-panel::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 .post-modal.closing .post-modal-panel {
@@ -580,6 +613,7 @@ p{
   padding: 10px 14px;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease, background 0.15s ease;
+  z-index: 2;
 }
 
 .post-modal-close:hover {
@@ -593,24 +627,6 @@ p{
   transform: translateY(0);
   box-shadow: 0 3px 8px rgba(0,0,0,0.12);
   filter: brightness(0.98);
-}
-
-.post-modal-panel::-webkit-scrollbar {
-  width: 10px;
-}
-
-.post-modal-panel::-webkit-scrollbar-track {
-  background: transparent;
-  border-radius: 10px;
-}
-
-.post-modal-panel::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.25);
-  border-radius: 10px;
-}
-
-.post-modal-panel::-webkit-scrollbar-thumb:hover {
-  background: rgba(0,0,0,0.4);
 }
 
 @keyframes postModalIn {
