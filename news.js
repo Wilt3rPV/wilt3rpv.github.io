@@ -9,6 +9,47 @@ let filteredPosts = [];
 const calendarRowsEl = document.getElementById("calendarRows");
 const addBtn = document.getElementById("addCalendarRowBtn");
 
+// =========================
+// TOAST NOTIFICATION SYSTEM
+// =========================
+
+function showToast(message, type = 'loading') {
+  const container = document.getElementById('toastContainer');
+  if (!container) return;
+
+  const toast = document.getElementById('toast');
+  const text = document.getElementById('toastText');
+
+  text.textContent = message;
+
+  toast.className = 'toast';
+  container.classList.remove('visible');
+
+  if (type === 'loading' || type === 'deleting') {
+    toast.classList.add('publishing');
+  } else if (type === 'success') {
+    toast.classList.add('success');
+  } else if (type === 'error') {
+    toast.classList.add('error');
+  }
+
+  requestAnimationFrame(() => {
+    container.classList.add('visible');
+  });
+}
+
+function hideToast() {
+  const container = document.getElementById('toastContainer');
+  if (container) {
+    container.classList.remove('visible');
+  }
+}
+
+function showError(message) {
+  showToast(message, 'error');
+  setTimeout(hideToast, 3000);
+}
+
 const themes = {
   prmsuIba: {
     name: "President Ramon Magsaysay State University - Iba Campus",
@@ -103,7 +144,7 @@ const MIN_LOADING_TIME = 800;
 async function fetchPosts() {
   const startTime = Date.now();
   
-  let query = db.from("posts").select("*").order('date', { ascending: false });
+  let query = db.from("posts").select("*").order('id', { ascending: false });
   
   if (selectedCollege) {
     query = query.eq("college", selectedCollege);
@@ -129,17 +170,14 @@ async function fetchPosts() {
   
   populateYearFilter();
   
-  // Calculate how much time has passed
   const elapsed = Date.now() - startTime;
   const remaining = Math.max(0, MIN_LOADING_TIME - elapsed);
   
-  // Wait minimum time, then fade out
   setTimeout(() => {
     const loading = document.getElementById("pageLoading");
     if (loading) {
       loading.classList.add("fade-out");
       
-      // Wait for fade animation, then show content
       setTimeout(() => {
         applyYearFilter();
       }, 220);
@@ -285,7 +323,6 @@ function escapeHtml(str) {
 // POST MODAL - INSTANT OPEN
 // =========================
 
-// Replace the openPost function
 function openPost(postId) {
   if (window.innerWidth <= 768) {
     window.location.href = `post.html?id=${postId}`;
@@ -294,7 +331,6 @@ function openPost(postId) {
   }
 }
 
-// Replace showPostModal
 async function showPostModal(postId) {
   const modal = document.getElementById("postModal");
   const content = document.getElementById("postModalContent");
@@ -342,13 +378,11 @@ async function showPostModal(postId) {
         loading.classList.add("fade-out");
         
         setTimeout(() => {
-          // Only show edit/delete buttons if admin
           const adminButtons = isAdmin ? `
             <button onclick="editPost(${post.id})">Edit Post</button>
             <button onclick="deletePost(${post.id})">Delete Post</button>
           ` : '';
           
-          // Add clickable class to banner if it exists
           const bannerHtml = post.banner ? 
             `<img src="${post.banner}" class="post-banner clickable" onclick="openImageOverlay('${post.banner}')" title="Click to view full size">` : 
             "";
@@ -378,29 +412,40 @@ async function showPostModal(postId) {
   }
 }
 
-// Replace deletePost
 async function deletePost(id) {
   if (!isAdmin) {
-    alert('Admin access required');
+    showError('Admin access required');
     return;
   }
   
   customModal("Are you sure you want to delete this post?", true, async (result) => {
     if (!result) return;
 
-    const { error } = await db
-      .from("posts")
-      .delete()
-      .eq("id", id);
+    showToast('Deleting post...', 'deleting');
 
-    if (error) {
-      console.error("Error deleting post:", error);
-      alert("Error deleting post");
-      return;
+    try {
+      const { error } = await db
+        .from("posts")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+        console.error("Error deleting post:", error);
+        showError("Error deleting post: " + error.message);
+        return;
+      }
+
+      showToast('Post deleted successfully!', 'success');
+      
+      closePostModal();
+      await fetchPosts();
+      
+      setTimeout(hideToast, 1500);
+      
+    } catch (err) {
+      console.error("Exception deleting post:", err);
+      showError("Error deleting post: " + err.message);
     }
-
-    closePostModal();
-    await fetchPosts();
   });
 }
 
@@ -418,26 +463,6 @@ function closePostModal() {
 
 function editPost(id) {
   window.location.href = `CREATE_POST.html?edit=${id}`;
-}
-
-async function deletePost(id) {
-  customModal("Are you sure you want to delete this post?", true, async (result) => {
-    if (!result) return;
-
-    const { error } = await db
-      .from("posts")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      console.error("Error deleting post:", error);
-      alert("Error deleting post");
-      return;
-    }
-
-    closePostModal();
-    await fetchPosts();
-  });
 }
 
 // =========================

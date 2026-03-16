@@ -68,6 +68,58 @@ async function loadEditPost(id, preview) {
   }
 }
 
+// =========================
+// TOAST NOTIFICATION SYSTEM
+// =========================
+
+function showToast(message, type = 'loading') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.getElementById('toast');
+  const text = document.getElementById('toastText');
+  
+  text.textContent = message;
+  
+  // Reset classes
+  toast.className = 'toast';
+  container.classList.remove('visible');
+  
+  // Add appropriate class
+  if (type === 'loading' || type === 'publishing') {
+    toast.classList.add('publishing');
+  } else if (type === 'success') {
+    toast.classList.add('success');
+  } else if (type === 'error') {
+    toast.classList.add('error');
+  }
+  
+  // Show toast
+  requestAnimationFrame(() => {
+    container.classList.add('visible');
+  });
+}
+
+function hideToast() {
+  const container = document.getElementById('toastContainer');
+  container.classList.remove('visible');
+}
+
+function showSuccessThenRedirect(message, college) {
+  showToast(message, 'success');
+  
+  // Wait a moment to show success, then redirect
+  setTimeout(() => {
+    hideToast();
+    setTimeout(() => {
+      window.location.href = `NEWS.html?college=${college}`;
+    }, 200);
+  }, 1200);
+}
+
+function showError(message) {
+  showToast(message, 'error');
+  setTimeout(hideToast, 3000);
+}
+
 // Insert image with LIMITED SIZE
 function insertImage(input) {
   if (!input.files || !input.files[0]) return;
@@ -82,8 +134,8 @@ function insertImage(input) {
     // Create image element with LIMITED SIZE
     const img = document.createElement('img');
     img.src = imgData;
-    img.style.maxWidth = '500px';   // Limit width
-    img.style.maxHeight = '500px';  // Limit height
+    img.style.maxWidth = '500px';
+    img.style.maxHeight = '500px';
     img.style.width = 'auto';
     img.style.height = 'auto';
     img.style.objectFit = 'contain';
@@ -129,8 +181,6 @@ function insertNodeAtCursor(node) {
   }
 }
 
-// Add to setupEditorImageHandler function:
-
 function setupEditorImageHandler() {
   const editor = document.getElementById('editor');
   const deleteBtn = document.getElementById('deleteImgBtn');
@@ -169,7 +219,7 @@ function setupEditorImageHandler() {
   // RIGHT-CLICK to delete (context menu)
   editor.addEventListener('contextmenu', function(e) {
     if (e.target.tagName === 'IMG') {
-      e.preventDefault(); // Block normal right-click menu
+      e.preventDefault();
       
       if (confirm('Delete this image?')) {
         e.target.parentNode.removeChild(e.target);
@@ -232,9 +282,12 @@ async function createPost() {
   const bannerInput = document.getElementById('banner');
 
   if (!title || !content) {
-    alert('Please fill in title and content');
+    showError('Please fill in title and content');
     return;
   }
+
+  // Show publishing toast immediately
+  showToast(editPost ? 'Updating post...' : 'Publishing post...', 'publishing');
 
   if (editPost) {
     const updates = {
@@ -248,11 +301,11 @@ async function createPost() {
       const reader = new FileReader();
       reader.onload = async function () {
         updates.banner = reader.result;
-        await updatePost(editPost.id, updates);
+        await updatePost(editPost.id, updates, selectedCollege);
       };
       reader.readAsDataURL(bannerInput.files[0]);
     } else {
-      await updatePost(editPost.id, updates);
+      await updatePost(editPost.id, updates, selectedCollege);
     }
   } else {
     const post = {
@@ -267,48 +320,54 @@ async function createPost() {
       const reader = new FileReader();
       reader.onload = async function () {
         post.banner = reader.result;
-        await insertPost(post);
+        await insertPost(post, selectedCollege);
       };
       reader.readAsDataURL(bannerInput.files[0]);
     } else {
-      await insertPost(post);
+      await insertPost(post, selectedCollege);
     }
   }
 }
 
-async function insertPost(post) {
-  const { data, error } = await db
-    .from("posts")
-    .insert([post])
-    .select();
+async function insertPost(post, college) {
+  try {
+    const { data, error } = await db
+      .from("posts")
+      .insert([post])
+      .select();
 
-  if (error) {
-    console.error("Error creating post:", error);
-    alert("Error creating post: " + error.message);
-    return;
+    if (error) {
+      console.error("Error creating post:", error);
+      showError("Error creating post: " + error.message);
+      return;
+    }
+
+    showSuccessThenRedirect('Post published successfully!', college);
+  } catch (err) {
+    console.error("Exception creating post:", err);
+    showError("Error creating post: " + err.message);
   }
-
-  customModal("Post created successfully!", false, () => {
-    window.location.href = `NEWS.html?college=${post.college}`;
-  });
 }
 
-async function updatePost(id, updates) {
-  const { data, error } = await db
-    .from("posts")
-    .update(updates)
-    .eq("id", id)
-    .select();
+async function updatePost(id, updates, college) {
+  try {
+    const { data, error } = await db
+      .from("posts")
+      .update(updates)
+      .eq("id", id)
+      .select();
 
-  if (error) {
-    console.error("Error updating post:", error);
-    alert("Error updating post: " + error.message);
-    return;
+    if (error) {
+      console.error("Error updating post:", error);
+      showError("Error updating post: " + error.message);
+      return;
+    }
+
+    showSuccessThenRedirect('Post updated successfully!', college);
+  } catch (err) {
+    console.error("Exception updating post:", err);
+    showError("Error updating post: " + err.message);
   }
-
-  customModal("Post updated successfully!", false, () => {
-    window.location.href = `NEWS.html?college=${updates.college}`;
-  });
 }
 
 function formatText(command) {

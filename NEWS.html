@@ -72,7 +72,7 @@
         cursor: default;
         transform: scale(0.1);
         opacity: 0;
-        transition: none; /* No transition initially */
+        transition: none;
       }
 
       /* POP OUT ANIMATION when visible */
@@ -141,9 +141,101 @@
       .post-banner.clickable:hover {
         transform: scale(1.02);
       }
+
+      /* Toast Notification Styles */
+      .toast-container {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-100px);
+        z-index: 100003;
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        pointer-events: none;
+      }
+
+      .toast-container.visible {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+
+      .toast {
+        background: #4b5964;
+        color: #fff;
+        padding: 16px 28px;
+        border-radius: 50px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 15px;
+        font-weight: 600;
+        min-width: 220px;
+        justify-content: center;
+      }
+
+      .toast-spinner {
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255,255,255,0.3);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: toastSpin 0.8s linear infinite;
+        flex-shrink: 0;
+      }
+
+      .toast.success {
+        background: #51cf66;
+      }
+
+      .toast.success .toast-spinner {
+        display: none;
+      }
+
+      .toast.success::before {
+        content: "✓";
+        font-size: 20px;
+        font-weight: bold;
+      }
+
+      .toast.error {
+        background: #ff6b6b;
+      }
+
+      .toast.error .toast-spinner {
+        display: none;
+      }
+
+      .toast.error::before {
+        content: "✕";
+        font-size: 18px;
+        font-weight: bold;
+      }
+
+      @keyframes toastSpin {
+        to { transform: rotate(360deg); }
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+      }
+
+      .toast.deleting .toast-text,
+      .toast.publishing .toast-text {
+        animation: pulse 1.5s ease-in-out infinite;
+      }
     </style>
   </head>
   <body>
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="toast-container">
+      <div id="toast" class="toast">
+        <div class="toast-spinner"></div>
+        <span class="toast-text" id="toastText">Loading...</span>
+      </div>
+    </div>
+
     <div class="banner-divider-top">
       <br>
       <h1 id="collegeName"></h1>
@@ -253,8 +345,20 @@
       }
 
       async function handleLogout() {
-        await signOut();
-        window.location.reload();
+        showToast('Logging out...', 'loading');
+        
+        try {
+          await signOut();
+          showToast('Logged out successfully!', 'success');
+          
+          setTimeout(() => {
+            hideToast();
+            window.location.reload();
+          }, 1200);
+        } catch (err) {
+          console.error('Logout error:', err);
+          showError('Error logging out');
+        }
       }
 
       function goToLogin() {
@@ -266,13 +370,8 @@
         const overlay = document.getElementById('imageOverlay');
         const fullImage = document.getElementById('fullImage');
         
-        // Prevent body scroll
         document.body.style.overflow = 'hidden';
-        
-        // Set image source
         fullImage.src = imageSrc;
-        
-        // Remove any closing class, add visible
         overlay.classList.remove('closing');
         overlay.classList.add('visible');
       }
@@ -281,11 +380,9 @@
         const overlay = document.getElementById('imageOverlay');
         const fullImage = document.getElementById('fullImage');
         
-        // Add closing class for exit animation
         overlay.classList.add('closing');
         overlay.classList.remove('visible');
         
-        // Wait for animation to finish then cleanup
         setTimeout(() => {
           overlay.classList.remove('closing');
           fullImage.src = '';
@@ -293,7 +390,6 @@
         }, 350);
       }
 
-      // Escape key to close
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
           const overlay = document.getElementById('imageOverlay');
@@ -307,7 +403,6 @@
         }
       });
 
-      // Click background to close
       document.getElementById('imageOverlay').addEventListener('click', function(e) {
         if (e.target === this) {
           closeImageOverlay();
