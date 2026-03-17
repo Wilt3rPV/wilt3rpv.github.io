@@ -617,34 +617,29 @@
       setTimeout(hideToast, 3000);
     }
 
-    // Fix for modal not working after back button navigation
-    window.addEventListener('pageshow', (event) => {
-      if (event.persisted) {
-        // Page loaded from bfcache - reset everything
-        console.log('Page restored from cache, resetting state...');
-        
-        // Reset card state
-        const card = document.getElementById('card');
-        const mainContent = document.getElementById('mainContent');
-        const authContent = document.getElementById('authContent');
-        
-        // Force reset to main view
-        card.classList.remove('auth-mode');
-        mainContent.style.opacity = '';
-        mainContent.style.transform = '';
-        mainContent.classList.remove('hidden');
-        authContent.style.opacity = '';
-        authContent.style.transform = '';
-        
-        // Clear any stuck animations
-        document.body.style.overflow = '';
-        
-        // Re-check auth state
-        checkAuth().then(() => {
-          updateUI();
-        });
+    // AGGRESSIVE FIX: Force page reload when coming from bfcache
+    // This ensures fresh JavaScript state after navigating back
+    (function() {
+      const navType = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+      
+      // Check if this is a back/forward navigation
+      if (navType && (navType.type === 'back_forward')) {
+        console.log('Back/forward navigation detected, reloading...');
+        window.location.reload();
+        return; // Stop execution
       }
-    });
+      
+      // Fallback for older browsers
+      if (window.history && window.history.state && window.history.state.reloaded) {
+        // Already reloaded once, don't loop
+        return;
+      }
+      
+      // Set flag for next time
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState({reloaded: true}, '');
+      }
+    })();
 
     const bg = document.querySelector('.bg-image');
     function animateBackground() {
@@ -846,7 +841,6 @@
       }
     });
 
-    // Initial auth check
     checkAuth().then(() => {
       updateUI();
     });
