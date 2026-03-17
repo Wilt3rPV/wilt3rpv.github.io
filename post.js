@@ -121,19 +121,79 @@ function showError(message) {
   setTimeout(hideToast, 3000);
 }
 
-async function loadPost() {
-  const { data: post, error } = await db
-    .from("posts")
-    .select("*")
-    .eq("id", id)
-    .single();
+// =========================
+// IMAGE OVERLAY FUNCTIONS
+// =========================
 
-  if (error || !post) {
-    container.innerHTML = '<h1>Post not found</h1>';
-    return;
+function openImageOverlay(src) {
+  const overlay = document.getElementById('imageOverlay');
+  const fullImage = document.getElementById('fullImage');
+  
+  fullImage.src = src;
+  overlay.classList.remove('closing');
+  overlay.classList.add('visible');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeImageOverlay() {
+  const overlay = document.getElementById('imageOverlay');
+  const fullImage = document.getElementById('fullImage');
+  
+  overlay.classList.add('closing');
+  overlay.classList.remove('visible');
+  
+  setTimeout(() => {
+    overlay.classList.remove('closing');
+    fullImage.src = '';
+    document.body.style.overflow = '';
+  }, 350);
+}
+
+// Close on escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const overlay = document.getElementById('imageOverlay');
+    if (overlay && overlay.classList.contains('visible')) {
+      closeImageOverlay();
+    }
   }
+});
 
-  renderPost(post);
+// =========================
+// POST LOADING
+// =========================
+
+async function loadPost() {
+  // Show loading spinner initially (already in HTML)
+  const startTime = Date.now();
+  const MIN_LOADING_TIME = 600; // Minimum time to show spinner
+
+  try {
+    const { data: post, error } = await db
+      .from("posts")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    const elapsed = Date.now() - startTime;
+    const remaining = Math.max(0, MIN_LOADING_TIME - elapsed);
+
+    if (error || !post) {
+      setTimeout(() => {
+        renderError("Post not found");
+      }, remaining);
+      return;
+    }
+
+    // Wait minimum time then render
+    setTimeout(() => {
+      renderPost(post);
+    }, remaining);
+
+  } catch (err) {
+    console.error("Error loading post:", err);
+    renderError("Error loading post. Please try again.");
+  }
 }
 
 function renderPost(post) {
@@ -142,16 +202,32 @@ function renderPost(post) {
     <button onclick="deletePost(${post.id})">Delete Post</button>
   ` : '';
   
+  // Banner with click to view full size
+  const bannerHtml = post.banner ? 
+    `<img src="${post.banner}" class="post-banner" onclick="openImageOverlay('${post.banner}')" title="Click to view full size">` : 
+    "";
+
   container.innerHTML = `
-    ${post.banner ? `<img src="${post.banner}" class="post-banner">` : ""}
+    ${bannerHtml}
     <h2>${post.title}</h2>
     <small class="post-date">${post.date}</small>
-    <div>${post.content}</div>
+    <div class="post-content">${post.content}</div>
     ${adminButtons}
   `;
 }
 
+function renderError(message) {
+  container.innerHTML = `
+    <div style="text-align: center; padding: 40px 20px;">
+      <h2>Error</h2>
+      <p>${message}</p>
+      <button onclick="window.history.back()">Go Back</button>
+    </div>
+  `;
+}
+
 function updatePostUI(user, admin) {
+  // Re-render to show/hide admin buttons
   loadPost();
 }
 
