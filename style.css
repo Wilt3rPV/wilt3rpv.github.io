@@ -929,3 +929,11 @@ body.modal-open {
 .hidden{
   display: none;
 }
+
+/* THE CHEAT: All images inside post content, but NOT the overlay */
+#post img:not(#fullImage) {
+  max-width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  margin: 10px auto !important;
+}
