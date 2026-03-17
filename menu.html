@@ -2,7 +2,7 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UNI-COL News</title>
-      <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
     <style>
       .inner-content {
         text-align: center;
@@ -20,8 +20,7 @@
       }
 
       .btn1 {
-        background-image: url("scfront2.png");
-        background-size: cover;
+        background-image: url("SCfront2.png");
       }
 
       .btn2 {
@@ -48,13 +47,28 @@
         background-image: url("botolans.png");
       }
 
+      /* Banner logo - LEFT aligned for MENU page */
+      .banner-logo {
+        height: 80px;
+        width: auto;
+        margin-right: 20px;
+        flex-shrink: 0;
+      }
+
+      @media (max-width: 768px) {
+        .banner-logo {
+          height: 35px;
+          margin-right: 10px;
+        }
+      }
     </style>
   </head>
   <body class="college-picker">
     <div class="banner-divider-top">
-      <br>  
-      <img src="final.png" width="300" height="110">
+      <img src="unicols2.png" class="banner-logo" alt="UNI-COL News">
+      <h1>Select a Campus</h1>
     </div>
+    
     <div class="content">
       <div class="inner-content">
         <br>
@@ -74,16 +88,7 @@
           <button class="btn btn5" onclick="window.location.href='NEWS.html?college=ccCruz'"><span>Columban College<br>- Sta. Cruz Campus</span></button>
 
           <button class="btn btn6" onclick="window.location.href='NEWS.html?college=lyceumBotolan'"><span>Lyceum Of Western Luzon<br>- Botolan Campus</span></button>
-
-          <!-- <button class="btn"><span>College 8</span></button>
-
-          <button class="btn"><span>college 9</span></button>
-            
-          <button class="btn"><span>college 10</span></button>
-
-          <button class="btn"><span>college 11</span></button> -->
         </div>
-
 
       </div>
       <div class="banner-divider-bottom"></div>
