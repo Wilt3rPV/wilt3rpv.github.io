@@ -617,6 +617,35 @@
       setTimeout(hideToast, 3000);
     }
 
+    // Fix for modal not working after back button navigation
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) {
+        // Page loaded from bfcache - reset everything
+        console.log('Page restored from cache, resetting state...');
+        
+        // Reset card state
+        const card = document.getElementById('card');
+        const mainContent = document.getElementById('mainContent');
+        const authContent = document.getElementById('authContent');
+        
+        // Force reset to main view
+        card.classList.remove('auth-mode');
+        mainContent.style.opacity = '';
+        mainContent.style.transform = '';
+        mainContent.classList.remove('hidden');
+        authContent.style.opacity = '';
+        authContent.style.transform = '';
+        
+        // Clear any stuck animations
+        document.body.style.overflow = '';
+        
+        // Re-check auth state
+        checkAuth().then(() => {
+          updateUI();
+        });
+      }
+    });
+
     const bg = document.querySelector('.bg-image');
     function animateBackground() {
       const x = Math.random() * 220 - 100;
@@ -817,6 +846,7 @@
       }
     });
 
+    // Initial auth check
     checkAuth().then(() => {
       updateUI();
     });
