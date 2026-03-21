@@ -387,11 +387,26 @@ async function showPostModal(postId) {
             `<img src="${post.banner}" class="post-banner clickable" onclick="openImageOverlay('${post.banner}')" title="Click to view full size">` : 
             "";
           
+          // Get course name from value
+          const courseNames = {
+            'comtech': 'Communication & Technology',
+            'indtech': 'Industrial Technology',
+            'education': 'Education',
+            'business': 'Business Administration',
+            'nursing': 'Nursing',
+            'arts': 'Arts & Sciences',
+            'engineering': 'Engineering',
+            'hospitality': 'Hospitality Management',
+            'criminology': 'Criminology',
+            'midwifery': 'Midwifery'
+          };
+          const courseDisplay = post.course ? ` • ${courseNames[post.course] || post.course}` : '';
+          
           content.innerHTML = `
             <div class="post-loaded">
               ${bannerHtml}
               <h2>${post.title}</h2>
-              <small class="post-date">${post.date}</small>
+              <small class="post-date">${post.date}${courseDisplay}</small>
               <p>${post.content.replace(/\n/g, "<br>")}</p>
               ${adminButtons}
             </div>
@@ -643,4 +658,41 @@ function customModal(message, showCancel, callback) {
     modal.classList.add("hidden");
     if (callback) callback(false);
   };
+}
+
+const courseFilter = document.getElementById("courseFilter");
+
+// Add to applyYearFilter function
+function applyFilters() {
+  const selectedYear = yearFilter ? yearFilter.value : "all";
+  const selectedCourse = courseFilter ? courseFilter.value : "all";
+  const searchText = searchInput ? searchInput.value.trim().toLowerCase() : "";
+
+  let finalPosts = allPosts;
+
+  if (selectedYear !== "all") {
+    finalPosts = finalPosts.filter(post => String(getPostYear(post)) === selectedYear);
+  }
+
+  // NEW: Filter by course
+  if (selectedCourse !== "all") {
+    finalPosts = finalPosts.filter(post => post.course === selectedCourse);
+  }
+
+  if (searchText !== "") {
+    finalPosts = finalPosts.filter(post =>
+      String(post.title || "").toLowerCase().includes(searchText)
+    );
+  }
+
+  filteredPosts = finalPosts;
+  renderPosts(finalPosts);
+}
+
+// Add event listener
+if (courseFilter) {
+  courseFilter.addEventListener("change", () => {
+    currentPage = 1;
+    applyFilters();
+  });
 }

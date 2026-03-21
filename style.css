@@ -510,6 +510,7 @@ p{
 .news-toolbar {
   display: flex;
   align-items: flex-start;
+  gap: 20px;
   flex-direction: column;
   margin: 90px 20px 0 0;
   width: 120px;
@@ -523,7 +524,7 @@ p{
 }
 
 #yearFilter{
-  width: 100px;
+  width: 120px;
   padding: 10px 14px;
   border-radius: 10px;
   border: 1px solid rgba(0,0,0,0.25);

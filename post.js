@@ -207,13 +207,66 @@ function renderPost(post) {
     `<img src="${post.banner}" class="post-banner" onclick="openImageOverlay('${post.banner}')" title="Click to view full size">` : 
     "";
 
+  // Format course name for display
+  const courseDisplay = post.course ? formatCourseName(post.course) : '';
+  const dateDisplay = post.date + (courseDisplay ? ' • ' + courseDisplay : '');
+
+  // Process content - fix image inline styles
+  let processedContent = post.content;
+  
+  // Remove inline width/height styles from images
+  processedContent = processedContent.replace(
+    /<img([^>]+)style=["'][^"']*["']([^>]*)>/gi,
+    '<img$1$2>'
+  );
+  
+  // Add class to all content images
+  processedContent = processedContent.replace(
+    /<img(?![^>]*class=["']post-banner["'])([^>]*)>/gi,
+    '<img class="content-img"$1>'
+  );
+
   container.innerHTML = `
     ${bannerHtml}
     <h2>${post.title}</h2>
-    <small class="post-date">${post.date}</small>
-    <div class="post-content">${post.content}</div>
+    <small class="post-date">${dateDisplay}</small>
+    <div class="post-content">${processedContent}</div>
     ${adminButtons}
   `;
+}
+
+// Helper function to format course code to readable name
+function formatCourseName(courseCode) {
+  const courseNames = {
+    'comtech': 'Communication & Technology',
+    'indtech': 'Industrial Technology',
+    'education': 'Education',
+    'business': 'Business Administration',
+    'nursing': 'Nursing',
+    'arts': 'Arts & Sciences',
+    'engineering': 'Engineering',
+    'hospitality': 'Hospitality Management',
+    'criminology': 'Criminology',
+    'midwifery': 'Midwifery'
+  };
+  return courseNames[courseCode] || courseCode;
+}
+
+// Helper function to format course code to readable name
+function formatCourseName(courseCode) {
+  const courseNames = {
+    'comtech': 'Communication & Technology',
+    'indtech': 'Industrial Technology',
+    'education': 'Education',
+    'business': 'Business Administration',
+    'nursing': 'Nursing',
+    'arts': 'Arts & Sciences',
+    'engineering': 'Engineering',
+    'hospitality': 'Hospitality Management',
+    'criminology': 'Criminology',
+    'midwifery': 'Midwifery'
+  };
+  return courseNames[courseCode] || courseCode;
 }
 
 function renderError(message) {

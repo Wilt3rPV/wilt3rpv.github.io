@@ -65,6 +65,12 @@ async function loadEditPost(id, preview) {
       select.value = editPost.college;
       select.disabled = true;
     }
+
+    // Load course if exists
+    const courseSelect = document.getElementById("courseSelect");
+    if (courseSelect && editPost.course) {
+      courseSelect.value = editPost.course;
+    }
   }
 }
 
@@ -79,11 +85,9 @@ function showToast(message, type = 'loading') {
   
   text.textContent = message;
   
-  // Reset classes
   toast.className = 'toast';
   container.classList.remove('visible');
   
-  // Add appropriate class
   if (type === 'loading' || type === 'publishing') {
     toast.classList.add('publishing');
   } else if (type === 'success') {
@@ -92,7 +96,6 @@ function showToast(message, type = 'loading') {
     toast.classList.add('error');
   }
   
-  // Show toast
   requestAnimationFrame(() => {
     container.classList.add('visible');
   });
@@ -106,7 +109,6 @@ function hideToast() {
 function showSuccessThenRedirect(message, college) {
   showToast(message, 'success');
   
-  // Wait a moment to show success, then redirect
   setTimeout(() => {
     hideToast();
     setTimeout(() => {
@@ -131,7 +133,6 @@ function insertImage(input) {
     const imgData = e.target.result;
     const editor = document.getElementById('editor');
     
-    // Create image element with LIMITED SIZE
     const img = document.createElement('img');
     img.src = imgData;
     img.style.maxWidth = '500px';
@@ -146,7 +147,6 @@ function insertImage(input) {
     
     insertNodeAtCursor(img);
     
-    // Add line break after image
     const br = document.createElement('br');
     insertNodeAtCursor(br);
     
@@ -185,7 +185,6 @@ function setupEditorImageHandler() {
   const editor = document.getElementById('editor');
   const deleteBtn = document.getElementById('deleteImgBtn');
   
-  // Click to select
   editor.addEventListener('click', function(e) {
     if (e.target.tagName === 'IMG') {
       e.preventDefault();
@@ -199,7 +198,6 @@ function setupEditorImageHandler() {
       selectedImage.classList.add('selected');
       deleteBtn.style.display = 'inline-block';
     } else {
-      // Clicked elsewhere, deselect
       if (selectedImage) {
         selectedImage.classList.remove('selected');
         selectedImage = null;
@@ -208,7 +206,6 @@ function setupEditorImageHandler() {
     }
   });
   
-  // Double-click to preview
   editor.addEventListener('dblclick', function(e) {
     if (e.target.tagName === 'IMG') {
       e.preventDefault();
@@ -216,7 +213,6 @@ function setupEditorImageHandler() {
     }
   });
   
-  // RIGHT-CLICK to delete (context menu)
   editor.addEventListener('contextmenu', function(e) {
     if (e.target.tagName === 'IMG') {
       e.preventDefault();
@@ -229,7 +225,6 @@ function setupEditorImageHandler() {
     }
   });
   
-  // DELETE KEY to remove selected image
   document.addEventListener('keydown', function(e) {
     if ((e.key === 'Delete' || e.key === 'Backspace') && selectedImage) {
       e.preventDefault();
@@ -277,6 +272,7 @@ document.addEventListener('keydown', (e) => {
 
 async function createPost() {
   const selectedCollege = document.getElementById("collegeSelect").value;
+  const selectedCourse = document.getElementById("courseSelect").value;
   const title = document.getElementById('title').value;
   const content = document.getElementById('editor').innerHTML;
   const bannerInput = document.getElementById('banner');
@@ -286,12 +282,12 @@ async function createPost() {
     return;
   }
 
-  // Show publishing toast immediately
   showToast(editPost ? 'Updating post...' : 'Publishing post...', 'publishing');
 
   if (editPost) {
     const updates = {
       college: selectedCollege,
+      course: selectedCourse,
       title: title,
       content: content,
       date: new Date().toLocaleString()
@@ -310,6 +306,7 @@ async function createPost() {
   } else {
     const post = {
       college: selectedCollege,
+      course: selectedCourse,
       title: title,
       content: content,
       banner: null,

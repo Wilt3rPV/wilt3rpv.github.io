@@ -232,6 +232,28 @@
           margin-right: 10px;
         }
       }
+
+      /* Course filter - same styling as yearFilter */
+      #courseFilter {
+        width: 100%;
+        max-width: 200px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid rgba(0,0,0,0.25);
+        background: rgba(255,255,255,0.85);
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.2s ease, filter 0.2s ease;
+      }
+
+      #courseFilter:hover {
+        background: rgba(220,220,220,0.95);
+        filter: brightness(0.98);
+      }
+
+      #courseFilter:focus {
+        outline: none;
+      }
     </style>
   </head>
   <body>
@@ -257,10 +279,27 @@
       <div class="inner-content">
 
         <div class="news-toolbar">
-          <label for="yearFilter" class="year-filter-label">Sort by Year</label>
-          <select id="yearFilter">
-            <option value="all">All</option>
-          </select>
+          <div class="filter-group">
+            <label for="yearFilter" class="year-filter-label">Sort by Year</label>
+            <select id="yearFilter">
+              <option value="all">All</option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label for="courseFilter" class="year-filter-label">Department</label>
+            <select id="courseFilter">
+              <option value="all">All</option>
+              <option value="comtech">Communication & Technology</option>
+              <option value="indtech">Industrial Technology</option>
+              <option value="education">Education</option>
+              <option value="business">Business Administration</option>
+              <option value="nursing">Nursing</option>
+              <option value="arts">Arts & Sciences</option>
+              <option value="engineering">Engineering</option>
+              <option value="hospitality">Hospitality Management</option>
+            </select>
+          </div>
         </div>
 
         <div class="left-column">
