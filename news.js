@@ -3,6 +3,10 @@ const selectedCollege = params.get("college");
 
 const container = document.getElementById('news-container');
 
+const searchInput = document.getElementById("searchInput");
+const yearFilter = document.getElementById("yearFilter");
+const paginationContainer = document.getElementById("pagination");
+
 let allPosts = [];
 let filteredPosts = [];
 
@@ -483,10 +487,6 @@ function editPost(id) {
 // =========================
 // SEARCH & FILTER
 // =========================
-
-const searchInput = document.getElementById("searchInput");
-const yearFilter = document.getElementById("yearFilter");
-const paginationContainer = document.getElementById("pagination");
 
 const POSTS_PER_PAGE = 10;
 let currentPage = 1;
