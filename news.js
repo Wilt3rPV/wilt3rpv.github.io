@@ -588,16 +588,24 @@ function renderPagination(postsToRender) {
   paginationContainer.appendChild(nextBtn);
 }
 
-function applyYearFilter() {
+function applyAllFilters() {
   const selectedYear = yearFilter ? yearFilter.value : "all";
+  const selectedCourse = courseFilter ? courseFilter.value : "all";
   const searchText = searchInput ? searchInput.value.trim().toLowerCase() : "";
 
   let finalPosts = allPosts;
 
+  // Apply year filter
   if (selectedYear !== "all") {
     finalPosts = finalPosts.filter(post => String(getPostYear(post)) === selectedYear);
   }
 
+  // Apply course filter
+  if (selectedCourse !== "all") {
+    finalPosts = finalPosts.filter(post => post.course === selectedCourse);
+  }
+
+  // Apply search filter
   if (searchText !== "") {
     finalPosts = finalPosts.filter(post =>
       String(post.title || "").toLowerCase().includes(searchText)
@@ -606,6 +614,7 @@ function applyYearFilter() {
 
   filteredPosts = finalPosts;
   
+  // Handle pagination reset
   const totalPages = Math.ceil(finalPosts.length / POSTS_PER_PAGE);
   if (totalPages === 0) {
     currentPage = 1;
@@ -619,14 +628,21 @@ function applyYearFilter() {
 if (yearFilter) {
   yearFilter.addEventListener("change", () => {
     currentPage = 1;
-    applyYearFilter();
+    applyAllFilters();
+  });
+}
+
+if (courseFilter) {
+  courseFilter.addEventListener("change", () => {
+    currentPage = 1;
+    applyAllFilters();
   });
 }
 
 if (searchInput) {
   searchInput.addEventListener("input", () => {
     currentPage = 1;
-    applyYearFilter();
+    applyAllFilters();
   });
 }
 
