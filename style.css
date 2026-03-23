@@ -367,12 +367,36 @@ p{
   margin-top:40px;
 }
 
-.calendar-card{
-  border-radius:12px;
-  padding:14px;
-  background:rgba(224,113,113,.08);
-  backdrop-filter:blur(8px);
+.calendar-card {
+  border-radius: 12px;
+  padding: 16px;
+  background: color-mix(in srgb, var(--divider_bottom) 40%, transparent);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 4px 30px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  position: relative;
+  overflow: hidden;
 }
+
+.calendar-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.4) 0%,
+    rgba(255,255,255,0) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
 
 .calendar-header{
   display:flex;
@@ -383,46 +407,90 @@ p{
 
 .calendar-rows{display:flex;flex-direction:column;gap:10px;}
 
-.calendar-row{
-  display:grid;
-  grid-template-columns:110px 1fr 36px;
-  gap:8px;
-  align-items:center;
-  padding:8px;
-  border-radius:10px;
-  background:rgba(0,0,0,.15);
+.calendar-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 36px;
+  gap: 8px;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  position: relative;
+  z-index: 2;
 }
 
-.calendar-row input{
-  width:100%;
-  padding:8px 10px;
-  border-radius:8px;
-  border:1px solid rgba(0,0,0,.25);
+.calendar-row input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(5px);
+  color: #333;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.calendar-row input:focus {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.8);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+}
+
+/* Readonly inputs - more transparent */
+.calendar-row input[readonly] {
+  background: rgb(255, 255, 255);
+  cursor: default;
+  color: #444;
 }
 
 .calendar-row .remove{
-  cursor:pointer;
-  padding:8px;
-  border-radius:8px;
-  border:1px solid rgba(0,0,0,.25);
-  background:rgba(255,255,255,.7);
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 100, 100, 0.7);
+  backdrop-filter: blur(5px);
+  color: #fff;
+  font-weight: bold;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
-.calendar-add{
-  width:100%;
-  margin-top:12px;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid rgba(0,0,0,.25);
-  cursor:pointer;
-  background:rgba(255,255,255,.7);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+/* Add button - glass effect with original gray/white color */
+.calendar-add {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px) saturate(150%);
+  color: #333;
+  font-weight: 100;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.calendar-add:hover{
+.calendar-add:hover {
+  background: rgba(255, 255, 255, 0.95);
   transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
   filter: brightness(1.05);
+}
+
+.calendar-add:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+  filter: brightness(0.98);
 }
 
 /* =========================
@@ -1023,4 +1091,76 @@ body.modal-open {
   height: auto !important;
   display: block !important;
   margin: 10px auto !important;
+}
+
+
+
+.calendar-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  gap: 12px;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.calendar-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-top: 3px solid rgba(255,255,255,0.9);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.calendar-loading-text {
+  font-size: 14px;
+  color: rgba(0,0,0,0.7);
+}
+
+/* Calendar remove button - only for admins */
+.remove-calendar {
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,.25);
+  background: rgba(255,100,100,0.8);
+  color: #fff;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.remove-calendar:hover {
+  background: rgba(255,80,80,1);
+  transform: scale(1.05);
+}
+
+/* Non-admin calendar inputs - LIGHTER readonly styling */
+/* .calendar-row input[readonly] {
+  background: rgba(255,255,255,0.6);
+  cursor: default;
+  border: 1px solid rgba(0,0,0,0.1);
+  color: #444;
+} */
+
+/* .calendar-row input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,.25);
+  background: rgba(255,255,255,0.9);
+  transition: all 0.2s ease;
+}
+
+.calendar-row input:focus {
+  background: #fff;
+  border-color: rgba(0,0,0,0.4);
+  outline: none;
+} */
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
