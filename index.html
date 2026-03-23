@@ -21,6 +21,7 @@
       position: relative;
     }
 
+    /* Background with blur effect */
     .bg-image,
     .bg-overlay {
       position: fixed;
@@ -43,13 +44,23 @@
       z-index: 1;
     }
 
+    /* Main card - GLASS/PINK style like dividers */
     .card {
       position: relative;
       z-index: 2;
       width: min(560px, 100%);
       min-height: min(630px, 92vh);
-      background: #4b5964;
+      
+      /* Glass effect matching dividers */
+      background: color-mix(in srgb, #4b5964 60%, transparent);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
       border-radius: 36px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 
+        0 10px 40px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -62,6 +73,23 @@
       animation-delay: 0.45s;
       opacity: 0;
       transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* Shine effect on top of card */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(
+        180deg,
+        rgba(255,255,255,0.4) 0%,
+        rgba(255,255,255,0) 100%
+      );
+      pointer-events: none;
+      z-index: 0;
     }
 
     .card.auth-mode {
@@ -77,6 +105,8 @@
       gap: 22px;
       width: 100%;
       transition: all 0.3s ease;
+      position: relative;
+      z-index: 2;
     }
 
     .main-content.hidden {
@@ -98,6 +128,8 @@
       opacity: 0;
       transform: translateY(20px);
       transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      position: relative;
+      z-index: 2;
     }
 
     .card.auth-mode .auth-content {
@@ -106,6 +138,7 @@
       transform: translateY(0);
     }
 
+    /* Logo with glass effect */
     .logo-img {
       width: min(400px, 100%);
       height: auto;
@@ -114,6 +147,7 @@
       animation: logoSequence 2.0s cubic-bezier(0.22, 1, 0.36, 1) forwards;
       animation-delay: 0.75s;
       transition: all 0.3s ease;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
     }
 
     .subtitle {
@@ -126,6 +160,7 @@
       animation: textIn 2.0s cubic-bezier(0.22, 1, 0.36, 1) forwards;
       animation-delay: 1.9s;
       transition: all 0.3s ease;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
     }
 
     .btn-wrap {
@@ -135,23 +170,31 @@
       transition: all 0.3s ease;
     }
 
+    /* Main button - glass style */
     .btn {
       border: 0;
       cursor: pointer;
       padding: 20px 64px;
       border-radius: 999px;
-      background: #7c848c;
-      color: #fff;
+      
+      /* Glass effect */
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px) saturate(150%);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      
+      color: #333;
       font-size: 16px;
       font-weight: 650;
       transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease;
       max-width: 100%;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
     }
 
     .btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 22px rgba(0,0,0,0.22);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
       filter: brightness(1.05);
+      background: rgba(255, 255, 255, 0.95);
     }
 
     .btn:active {
@@ -160,56 +203,87 @@
       filter: brightness(0.98);
     }
 
+   /* Admin login/panel button - glass style WITH animation */
     .admin-login-btn {
       position: absolute;
       top: 20px;
       right: 20px;
       padding: 10px 20px;
       border-radius: 999px;
-      border: 2px solid rgba(255,255,255,0.3);
-      background: transparent;
+      
+      /* Glass effect */
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px) saturate(150%);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      
       color: #fff;
       font-size: 14px;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease, background 150ms ease;
       opacity: 0;
       animation: buttonIn 0.45s ease forwards;
       animation-delay: 2.2s;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
     }
 
     .admin-login-btn:hover {
-      background: rgba(255,255,255,0.1);
-      border-color: rgba(255,255,255,0.6);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.22);
+      filter: brightness(1.05);
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.6);
+    }
+
+    .admin-login-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+      filter: brightness(0.98);
     }
 
     .card.auth-mode .admin-login-btn {
       display: none;
     }
 
+    /* Back button - glass style WITH animation */
     .back-btn {
       position: absolute;
       top: 20px;
       left: 20px;
       padding: 10px 20px;
       border-radius: 999px;
-      border: 2px solid rgba(255,255,255,0.3);
-      background: transparent;
+      
+      /* Glass effect */
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px) saturate(150%);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      
       color: #fff;
       font-size: 14px;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease, background 150ms ease;
       display: none;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
     }
 
     .back-btn:hover {
-      background: rgba(255,255,255,0.1);
-      border-color: rgba(255,255,255,0.6);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.22);
+      filter: brightness(1.05);
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.6);
+    }
+
+    .back-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+      filter: brightness(0.98);
     }
 
     .card.auth-mode .back-btn {
       display: block;
     }
 
+    /* Admin badge - glass style */
     .admin-badge {
       position: absolute;
       top: 20px;
@@ -217,7 +291,12 @@
       transform: translateX(-50%);
       padding: 8px 16px;
       border-radius: 999px;
-      background: #51cf66;
+      
+      /* Glass effect */
+      background: rgba(81, 207, 102, 0.8);
+      backdrop-filter: blur(10px) saturate(150%);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      
       color: #fff;
       font-size: 12px;
       font-weight: 600;
@@ -225,21 +304,25 @@
       animation: buttonIn 0.45s ease forwards;
       animation-delay: 2.2s;
       display: none;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
 
     .admin-badge.visible {
       display: block;
     }
 
+    /* Auth forms - glass inputs */
     .auth-header {
       color: #fff;
       font-size: 28px;
       font-weight: 700;
       margin: 0 0 8px 0;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
     }
 
     .auth-subtitle {
-      color: rgba(255,255,255,0.6);
+      color: rgba(255,255,255,0.8);
       font-size: 14px;
       margin-bottom: 24px;
     }
@@ -251,18 +334,23 @@
 
     .form-label {
       display: block;
-      color: rgba(255,255,255,0.8);
+      color: rgba(255,255,255,0.9);
       font-size: 14px;
       margin-bottom: 6px;
       font-weight: 500;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
     }
 
     .form-input {
       width: 100%;
       padding: 14px 16px;
       border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.2);
-      background: rgba(255,255,255,0.1);
+      
+      /* Glass effect */
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      
       color: #fff;
       font-size: 16px;
       outline: none;
@@ -270,31 +358,68 @@
     }
 
     .form-input:focus {
-      border-color: rgba(255,255,255,0.5);
-      background: rgba(255,255,255,0.15);
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.6);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
     }
 
     .form-input::placeholder {
-      color: rgba(255,255,255,0.4);
+      color: rgba(255,255,255,0.5);
     }
 
+    /* Form button - glass style WITH animation */
     .form-button {
       width: 100%;
       padding: 16px;
       border-radius: 12px;
-      border: none;
-      background: #7c848c;
-      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      
+      /* Glass effect */
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px) saturate(150%);
+      
+      color: #333;
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
       margin-top: 8px;
-      transition: all 0.15s ease;
+      transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease, background 150ms ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
     .form-button:hover {
-      filter: brightness(1.1);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.22);
+      filter: brightness(1.05);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .form-button:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+      filter: brightness(0.98);
+    }
+
+    /* Logout button - glass style WITH animation */
+    .logout-btn {
+      margin-top: 20px;
+      background: rgba(255, 100, 100, 0.8);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease, background 150ms ease;
+    }
+
+    .logout-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.22);
+      filter: brightness(1.05);
+      background: rgba(255, 80, 80, 0.9);
+    }
+
+    .logout-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+      filter: brightness(0.98);
     }
 
     .form-error {
@@ -302,6 +427,7 @@
       font-size: 14px;
       margin-top: 12px;
       text-align: center;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
     }
 
     .form-success {
@@ -310,9 +436,10 @@
       margin-top: 12px;
       text-align: center;
       padding: 12px;
-      background: rgba(81, 207, 102, 0.1);
+      background: rgba(81, 207, 102, 0.15);
+      backdrop-filter: blur(5px);
       border-radius: 8px;
-      border: 1px solid rgba(81, 207, 102, 0.3);
+      border: 1px solid rgba(81, 207, 102, 0.4);
     }
 
     .registered-email {
@@ -322,20 +449,6 @@
       margin-top: 4px;
     }
 
-    .form-toggle {
-      text-align: center;
-      margin-top: 20px;
-      color: rgba(255,255,255,0.6);
-      font-size: 14px;
-    }
-
-    .form-toggle a {
-      color: #fff;
-      cursor: pointer;
-      text-decoration: underline;
-      font-weight: 500;
-    }
-
     .logged-in-view {
       text-align: center;
       color: #fff;
@@ -343,21 +456,12 @@
 
     .logged-in-email {
       font-weight: 600;
-      color: #7c848c;
-    }
-
-    .logout-btn {
-      margin-top: 20px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.3);
-    }
-
-    .logout-btn:hover {
-      background: rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.9);
     }
 
     .hidden { display: none !important; }
 
+    /* Animations */
     @keyframes textIn {
       from { opacity: 0; transform: translateY(-45px); }
       to { opacity: 1; transform: translateY(-70px); }
@@ -400,7 +504,7 @@
       .auth-header { font-size: 24px; }
     }
 
-    /* Toast Notification Styles */
+    /* Toast Notification Styles - Glass */
     .toast-container {
       position: fixed;
       top: 20px;
@@ -418,7 +522,11 @@
     }
 
     .toast {
-      background: #4b5964;
+      /* Glass effect */
+      background: color-mix(in srgb, #4b5964 80%, transparent);
+      backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      
       color: #fff;
       padding: 16px 28px;
       border-radius: 50px;
@@ -443,7 +551,7 @@
     }
 
     .toast.success {
-      background: #51cf66;
+      background: color-mix(in srgb, #51cf66 80%, transparent);
     }
 
     .toast.success .toast-spinner {
@@ -457,7 +565,7 @@
     }
 
     .toast.error {
-      background: #ff6b6b;
+      background: color-mix(in srgb, #ff6b6b 80%, transparent);
     }
 
     .toast.error .toast-spinner {
@@ -499,7 +607,7 @@
   <div class="card" id="card">
     <div class="admin-badge" id="adminBadge">ADMIN</div>
     
-    <button class="back-btn" id="backBtn" onclick="showMainContent()">← Back</button>
+    <button class="back-btn" id="backBtn" onclick="handleBackButton()">← Back</button>
     <button class="admin-login-btn" id="adminLoginBtn" onclick="showAuthMode()">Admin Login</button>
 
     <div class="main-content" id="mainContent">
@@ -531,9 +639,9 @@
           <div class="form-error hidden" id="loginError"></div>
         </form>
 
-        <div class="form-toggle">
+        <!-- <div class="form-toggle">
           Need to register an admin? <a onclick="showRegisterView()">Register</a>
-        </div>
+        </div> -->
       </div>
 
       <div id="registerView" class="hidden">
@@ -561,10 +669,6 @@
             They can now log in.
           </div>
         </form>
-
-        <div class="form-toggle">
-          Already have an account? <a onclick="showLoginView()">Sign In</a>
-        </div>
       </div>
 
       <div id="loggedInView" class="hidden logged-in-view">
@@ -739,11 +843,15 @@
       const badge = document.getElementById('adminBadge');
       
       if (currentUser && isAdmin) {
-        loginBtn.classList.add('hidden');
+        loginBtn.classList.remove('hidden');
         badge.classList.add('visible');
+        loginBtn.textContent = 'Admin Panel'; // Change text
+        loginBtn.onclick = showAuthMode; // Go to auth mode (shows logged in view)
       } else {
         loginBtn.classList.remove('hidden');
         badge.classList.remove('visible');
+        loginBtn.textContent = 'Admin Login'; // Reset text
+        loginBtn.onclick = showAuthMode; // Original function
       }
     }
 
@@ -844,6 +952,30 @@
     checkAuth().then(() => {
       updateUI();
     });
+
+    function showRegisterFromLoggedIn() {
+      showRegisterView();
+    }
+
+    function handleBackButton() {
+      // Check which view is currently visible
+      const loginView = document.getElementById('loginView');
+      const registerView = document.getElementById('registerView');
+      const loggedInView = document.getElementById('loggedInView');
+      
+      // If on register view, go back to logged in view (if admin) or login view
+      if (!registerView.classList.contains('hidden')) {
+        if (currentUser && isAdmin) {
+          showLoggedInView();
+        } else {
+          showLoginView();
+        }
+      } 
+      // If on login or logged in view, go back to main content
+      else {
+        showMainContent();
+      }
+    }
   </script>
 </body>
 </html>

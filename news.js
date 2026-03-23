@@ -5,6 +5,7 @@ const container = document.getElementById('news-container');
 
 const searchInput = document.getElementById("searchInput");
 const yearFilter = document.getElementById("yearFilter");
+const courseFilter = document.getElementById("courseFilter");
 const paginationContainer = document.getElementById("pagination");
 
 let allPosts = [];
@@ -12,6 +13,79 @@ let filteredPosts = [];
 
 const calendarRowsEl = document.getElementById("calendarRows");
 const addBtn = document.getElementById("addCalendarRowBtn");
+
+// =========================
+// CAMPUS-SPECIFIC DEPARTMENTS
+// =========================
+
+const campusDepartments = {
+  prmsuIba: [
+    { value: 'comtech', label: 'Communication & Information Technology' },
+    { value: 'indtech', label: 'Industrial Technology' },
+    { value: 'education', label: 'Education' },
+    { value: 'business', label: 'Business Administration' },
+    { value: 'nursing', label: 'Nursing' },
+    { value: 'arts', label: 'Arts & Sciences' },
+    { value: 'engineering', label: 'Engineering' },
+    { value: 'agri', label: 'Agriculture & Forestry' },
+    { value: 'hospitality', label: 'Hospitality Management' },
+    { value: 'criminology', label: 'Criminology' },
+    { value: 'midwifery', label: 'Midwifery' }
+  ],
+  prmsuBotolan: [
+    { value: 'comtech', label: 'Communication & IT' },
+    { value: 'indtech', label: 'Industrial Technology' },
+    { value: 'education', label: 'Education' },
+    { value: 'fisheries', label: 'Fisheries' }
+  ],
+  macsatIba: [
+    { value: 'comtech', label: 'Computer Studies' },
+    { value: 'it-voc', label: 'IT (Vocational)' },
+    { value: 'comp-tech', label: 'Computer Technician' },
+    { value: 'business', label: 'Business Administration' }
+  ],
+  ccGapo: [
+    { value: 'business', label: 'Business & Accountancy' },
+    { value: 'education', label: 'Arts, Sciences & Education' },
+    { value: 'comtech', label: 'Computer Studies' },
+    { value: 'engineering', label: 'Engineering' },
+    { value: 'architecture', label: 'Architecture' },
+    { value: 'nursing', label: 'Nursing' }
+  ],
+  ccCruz: [
+    { value: 'education', label: 'Education' },
+    { value: 'business', label: 'Business Administration' },
+    { value: 'comtech', label: 'Information Systems' }
+  ],
+  prmsuMan: [
+    { value: 'comtech', label: 'Communication & IT' },
+    { value: 'indtech', label: 'Industrial Technology' },
+    { value: 'education', label: 'Education' },
+    { value: 'fisheries', label: 'Fisheries' }
+  ],
+  lyceumBotolan: [
+    { value: 'business', label: 'Business Administration' },
+    { value: 'comtech', label: 'Computer Studies' },
+    { value: 'education', label: 'Education' },
+    { value: 'hospitality', label: 'Hospitality Management' }
+  ]
+};
+
+// Function to populate course filter based on campus
+function populateCourseFilter() {
+  const courseFilter = document.getElementById("courseFilter");
+  if (!courseFilter) return;
+  
+  if (campusDepartments[selectedCollege]) {
+    courseFilter.innerHTML = '<option value="all">All</option>';
+    campusDepartments[selectedCollege].forEach(dept => {
+      const option = document.createElement("option");
+      option.value = dept.value;
+      option.textContent = dept.label;
+      courseFilter.appendChild(option);
+    });
+  }
+}
 
 // =========================
 // TOAST NOTIFICATION SYSTEM
@@ -119,6 +193,7 @@ if (theme) {
 showPageLoading();
 
 document.addEventListener("DOMContentLoaded", async () => {
+  populateCourseFilter(); // Populate campus-specific departments
   await fetchPosts();
   await renderCalendar();
 });
@@ -139,7 +214,7 @@ function showPageLoading() {
 }
 
 // Minimum time to show loading spinner (ms)
-const MIN_LOADING_TIME = 800;
+const MIN_LOADING_TIME = 200;
 
 // =========================
 // POSTS (Supabase)
@@ -183,10 +258,10 @@ async function fetchPosts() {
       loading.classList.add("fade-out");
       
       setTimeout(() => {
-        applyYearFilter();
+        applyAllFilters();
       }, 220);
     } else {
-      applyYearFilter();
+      applyAllFilters();
     }
   }, remaining);
 }
@@ -254,23 +329,79 @@ async function deleteCalendarRow(id) {
 }
 
 async function renderCalendar() {
+  // Show loading spinner
+  calendarRowsEl.innerHTML = `
+    <div class="calendar-loading" id="calendarLoading">
+      <div class="calendar-spinner"></div>
+      <div class="calendar-loading-text">Loading calendar...</div>
+    </div>
+  `;
+
   const rows = await loadCalendar();
+  
+  // Small delay for smooth transition
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
   calendarRowsEl.innerHTML = "";
 
   if (rows.length === 0) {
-    calendarRowsEl.innerHTML = `<div style="opacity:.75;">Empty.</div>`;
+    calendarRowsEl.innerHTML = `<div style="opacity:.75; padding: 20px;">No events scheduled.</div>`;
     return;
   }
 
   rows.forEach((row) => {
     const div = document.createElement("div");
     div.className = "calendar-row";
+    
+    // Only show X button for admins
+    const removeButton = isAdmin ? 
+      `<button class="remove-calendar" title="Remove" data-remove="${row.id}">X</button>` : 
+      '';
+    
+    // Make inputs readonly for non-admins
+    const readonlyAttr = !isAdmin ? 'readonly' : '';
+    
     div.innerHTML = `
-      <input type="text" value="${escapeHtml(row.date)}" placeholder="Date (e.g. Mar 10)" data-field="date" data-id="${row.id}">
-      <input type="text" value="${escapeHtml(row.label)}" placeholder="Event (e.g. Start of classes)" data-field="label" data-id="${row.id}">
-      <button class="remove" title="Remove" data-remove="${row.id}">X</button>
+      <input type="text" value="${escapeHtml(row.date)}" placeholder="Date (e.g. Mar 10)" data-field="date" data-id="${row.id}" ${readonlyAttr}>
+      <input type="text" value="${escapeHtml(row.label)}" placeholder="Event (e.g. Start of classes)" data-field="label" data-id="${row.id}" ${readonlyAttr}>
+      ${removeButton}
     `;
     calendarRowsEl.appendChild(div);
+  });
+}
+
+if (calendarRowsEl) {
+  calendarRowsEl.addEventListener("input", async (e) => {
+    const id = Number(e.target.dataset.id);
+    const field = e.target.dataset.field;
+    if (!id || !field) return;
+    
+    // Only allow editing if admin
+    if (!isAdmin) {
+      e.preventDefault();
+      return;
+    }
+
+    const rows = await loadCalendar();
+    const row = rows.find(r => r.id === id);
+    if (!row) return;
+
+    row[field] = e.target.value;
+    await saveCalendarRow(row);
+  });
+
+  calendarRowsEl.addEventListener("click", async (e) => {
+    const removeId = Number(e.target.dataset.remove);
+    if (!removeId) return;
+    
+    // Only allow delete if admin
+    if (!isAdmin) {
+      e.preventDefault();
+      return;
+    }
+
+    await deleteCalendarRow(removeId);
+    await renderCalendar();
   });
 }
 
@@ -287,29 +418,6 @@ if (addBtn) {
       return;
     }
     
-    await renderCalendar();
-  });
-}
-
-if (calendarRowsEl) {
-  calendarRowsEl.addEventListener("input", async (e) => {
-    const id = Number(e.target.dataset.id);
-    const field = e.target.dataset.field;
-    if (!id || !field) return;
-
-    const rows = await loadCalendar();
-    const row = rows.find(r => r.id === id);
-    if (!row) return;
-
-    row[field] = e.target.value;
-    await saveCalendarRow(row);
-  });
-
-  calendarRowsEl.addEventListener("click", async (e) => {
-    const removeId = Number(e.target.dataset.remove);
-    if (!removeId) return;
-
-    await deleteCalendarRow(removeId);
     await renderCalendar();
   });
 }
@@ -391,18 +499,22 @@ async function showPostModal(postId) {
             `<img src="${post.banner}" class="post-banner clickable" onclick="openImageOverlay('${post.banner}')" title="Click to view full size">` : 
             "";
           
-          // Get course name from value
           const courseNames = {
-            'comtech': 'Communication & Technology',
+            'comtech': 'Communication & Information Technology',
             'indtech': 'Industrial Technology',
             'education': 'Education',
             'business': 'Business Administration',
             'nursing': 'Nursing',
             'arts': 'Arts & Sciences',
             'engineering': 'Engineering',
+            'agri': 'Agriculture & Forestry',
             'hospitality': 'Hospitality Management',
             'criminology': 'Criminology',
-            'midwifery': 'Midwifery'
+            'midwifery': 'Midwifery',
+            'fisheries': 'Fisheries',
+            'it-voc': 'IT (Vocational)',
+            'comp-tech': 'Computer Technician',
+            'architecture': 'Architecture'
           };
           const courseDisplay = post.course ? ` • ${courseNames[post.course] || post.course}` : '';
           
@@ -485,7 +597,71 @@ function editPost(id) {
 }
 
 // =========================
-// SEARCH & FILTER
+// UNIFIED FILTER FUNCTION
+// =========================
+
+function applyAllFilters() {
+  const selectedYear = yearFilter ? yearFilter.value : "all";
+  const selectedCourse = courseFilter ? courseFilter.value : "all";
+  const searchText = searchInput ? searchInput.value.trim().toLowerCase() : "";
+
+  let finalPosts = allPosts;
+
+  // Apply year filter
+  if (selectedYear !== "all") {
+    finalPosts = finalPosts.filter(post => String(getPostYear(post)) === selectedYear);
+  }
+
+  // Apply course filter
+  if (selectedCourse !== "all") {
+    finalPosts = finalPosts.filter(post => post.course === selectedCourse);
+  }
+
+  // Apply search filter
+  if (searchText !== "") {
+    finalPosts = finalPosts.filter(post =>
+      String(post.title || "").toLowerCase().includes(searchText)
+    );
+  }
+
+  filteredPosts = finalPosts;
+  
+  // Handle pagination bounds
+  const totalPages = Math.ceil(finalPosts.length / POSTS_PER_PAGE);
+  if (currentPage > totalPages) {
+    currentPage = Math.max(1, totalPages);
+  }
+
+  renderPosts(finalPosts);
+}
+
+// =========================
+// EVENT LISTENERS - ALL USE SAME FUNCTION
+// =========================
+
+if (yearFilter) {
+  yearFilter.addEventListener("change", () => {
+    currentPage = 1;
+    applyAllFilters();
+  });
+}
+
+if (courseFilter) {
+  courseFilter.addEventListener("change", () => {
+    currentPage = 1;
+    applyAllFilters();
+  });
+}
+
+if (searchInput) {
+  searchInput.addEventListener("input", () => {
+    currentPage = 1;
+    applyAllFilters();
+  });
+}
+
+// =========================
+// SEARCH & FILTER HELPERS
 // =========================
 
 const POSTS_PER_PAGE = 10;
@@ -524,7 +700,6 @@ function renderPosts(postsToRender) {
     const card = document.createElement("div");
     card.className = "news-card";
     
-    // Reset animation
     card.style.animation = 'none';
     
     if (post.banner) {
@@ -538,7 +713,6 @@ function renderPosts(postsToRender) {
     card.onclick = () => openPost(post.id);
     container.appendChild(card);
     
-    // Trigger animation with cubic-bezier
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         card.style.animation = `cardLoadIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards`;
@@ -560,7 +734,7 @@ function renderPagination(postsToRender) {
   prevBtn.disabled = currentPage === 1;
   prevBtn.onclick = () => {
     currentPage--;
-    applyYearFilter();
+    applyAllFilters();
   };
   paginationContainer.appendChild(prevBtn);
 
@@ -573,7 +747,7 @@ function renderPagination(postsToRender) {
     }
     pageBtn.onclick = () => {
       currentPage = i;
-      applyYearFilter();
+      applyAllFilters();
     };
     paginationContainer.appendChild(pageBtn);
   }
@@ -583,67 +757,9 @@ function renderPagination(postsToRender) {
   nextBtn.disabled = currentPage === totalPages;
   nextBtn.onclick = () => {
     currentPage++;
-    applyYearFilter();
+    applyAllFilters();
   };
   paginationContainer.appendChild(nextBtn);
-}
-
-function applyAllFilters() {
-  const selectedYear = yearFilter ? yearFilter.value : "all";
-  const selectedCourse = courseFilter ? courseFilter.value : "all";
-  const searchText = searchInput ? searchInput.value.trim().toLowerCase() : "";
-
-  let finalPosts = allPosts;
-
-  // Apply year filter
-  if (selectedYear !== "all") {
-    finalPosts = finalPosts.filter(post => String(getPostYear(post)) === selectedYear);
-  }
-
-  // Apply course filter
-  if (selectedCourse !== "all") {
-    finalPosts = finalPosts.filter(post => post.course === selectedCourse);
-  }
-
-  // Apply search filter
-  if (searchText !== "") {
-    finalPosts = finalPosts.filter(post =>
-      String(post.title || "").toLowerCase().includes(searchText)
-    );
-  }
-
-  filteredPosts = finalPosts;
-  
-  // Handle pagination reset
-  const totalPages = Math.ceil(finalPosts.length / POSTS_PER_PAGE);
-  if (totalPages === 0) {
-    currentPage = 1;
-  } else if (currentPage > totalPages) {
-    currentPage = totalPages;
-  }
-
-  renderPosts(finalPosts);
-}
-
-if (yearFilter) {
-  yearFilter.addEventListener("change", () => {
-    currentPage = 1;
-    applyAllFilters();
-  });
-}
-
-if (courseFilter) {
-  courseFilter.addEventListener("change", () => {
-    currentPage = 1;
-    applyAllFilters();
-  });
-}
-
-if (searchInput) {
-  searchInput.addEventListener("input", () => {
-    currentPage = 1;
-    applyAllFilters();
-  });
 }
 
 // =========================
@@ -674,41 +790,4 @@ function customModal(message, showCancel, callback) {
     modal.classList.add("hidden");
     if (callback) callback(false);
   };
-}
-
-const courseFilter = document.getElementById("courseFilter");
-
-// Add to applyYearFilter function
-function applyFilters() {
-  const selectedYear = yearFilter ? yearFilter.value : "all";
-  const selectedCourse = courseFilter ? courseFilter.value : "all";
-  const searchText = searchInput ? searchInput.value.trim().toLowerCase() : "";
-
-  let finalPosts = allPosts;
-
-  if (selectedYear !== "all") {
-    finalPosts = finalPosts.filter(post => String(getPostYear(post)) === selectedYear);
-  }
-
-  // NEW: Filter by course
-  if (selectedCourse !== "all") {
-    finalPosts = finalPosts.filter(post => post.course === selectedCourse);
-  }
-
-  if (searchText !== "") {
-    finalPosts = finalPosts.filter(post =>
-      String(post.title || "").toLowerCase().includes(searchText)
-    );
-  }
-
-  filteredPosts = finalPosts;
-  renderPosts(finalPosts);
-}
-
-// Add event listener
-if (courseFilter) {
-  courseFilter.addEventListener("change", () => {
-    currentPage = 1;
-    applyFilters();
-  });
 }

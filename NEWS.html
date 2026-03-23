@@ -134,7 +134,7 @@
         transform: scale(1.02);
       }
 
-      /* Toast Notification Styles */
+  /* Toast Notification Styles - Glass */
       .toast-container {
         position: fixed;
         top: 20px;
@@ -152,7 +152,11 @@
       }
 
       .toast {
-        background: #4b5964;
+        /* Glass effect */
+        background: color-mix(in srgb, #4b5964 80%, transparent);
+        backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        
         color: #fff;
         padding: 16px 28px;
         border-radius: 50px;
@@ -177,7 +181,7 @@
       }
 
       .toast.success {
-        background: #51cf66;
+        background: color-mix(in srgb, #51cf66 80%, transparent);
       }
 
       .toast.success .toast-spinner {
@@ -191,7 +195,7 @@
       }
 
       .toast.error {
-        background: #ff6b6b;
+        background: color-mix(in srgb, #ff6b6b 80%, transparent);
       }
 
       .toast.error .toast-spinner {
@@ -214,7 +218,7 @@
       }
 
       .toast.deleting .toast-text,
-      .toast.publishing .toast-text {
+      .toast.loading .toast-text {
         animation: pulse 1.5s ease-in-out infinite;
       }
 
@@ -287,17 +291,9 @@
           </div>
           
           <div class="filter-group">
-            <label for="courseFilter" class="year-filter-label">Department</label>
+            <label for="courseFilter" class="year-filter-label">Sort by department</label>
             <select id="courseFilter">
               <option value="all">All</option>
-              <option value="comtech">Communication & Technology</option>
-              <option value="indtech">Industrial Technology</option>
-              <option value="education">Education</option>
-              <option value="business">Business Administration</option>
-              <option value="nursing">Nursing</option>
-              <option value="arts">Arts & Sciences</option>
-              <option value="engineering">Engineering</option>
-              <option value="hospitality">Hospitality Management</option>
             </select>
           </div>
         </div>
