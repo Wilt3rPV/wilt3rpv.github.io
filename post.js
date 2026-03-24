@@ -75,12 +75,12 @@ function showToast(message, type = 'loading') {
         background: #51cf66;
       }
       .toast.success .toast-spinner { display: none; }
-      .toast.success::before { content: "✓"; font-size: 20px; font-weight: bold; }
+      .toast.success::before { content: ":)"; font-size: 20px; font-weight: bold; }
       .toast.error {
         background: #ff6b6b;
       }
       .toast.error .toast-spinner { display: none; }
-      .toast.error::before { content: "✕"; font-size: 18px; font-weight: bold; }
+      .toast.error::before { content: "x"; font-size: 18px; font-weight: bold; }
       @keyframes toastSpin { to { transform: rotate(360deg); } }
       @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
       .toast.deleting .toast-text { animation: pulse 1.5s ease-in-out infinite; }
@@ -209,7 +209,7 @@ function renderPost(post) {
 
   // Format course name for display
   const courseDisplay = post.course ? formatCourseName(post.course) : '';
-  const dateDisplay = post.date + (courseDisplay ? ' • ' + courseDisplay : '');
+  const dateDisplay = post.date + (courseDisplay ? ' | ' + courseDisplay : '');
 
   // Process content - fix image inline styles
   let processedContent = post.content;
@@ -238,33 +238,21 @@ function renderPost(post) {
 // Helper function to format course code to readable name
 function formatCourseName(courseCode) {
   const courseNames = {
-    'comtech': 'Communication & Technology',
+    'comtech': 'Communication & Information Technology',
     'indtech': 'Industrial Technology',
     'education': 'Education',
     'business': 'Business Administration',
     'nursing': 'Nursing',
     'arts': 'Arts & Sciences',
     'engineering': 'Engineering',
+    'agri': 'Agriculture & Forestry',
     'hospitality': 'Hospitality Management',
     'criminology': 'Criminology',
-    'midwifery': 'Midwifery'
-  };
-  return courseNames[courseCode] || courseCode;
-}
-
-// Helper function to format course code to readable name
-function formatCourseName(courseCode) {
-  const courseNames = {
-    'comtech': 'Communication & Technology',
-    'indtech': 'Industrial Technology',
-    'education': 'Education',
-    'business': 'Business Administration',
-    'nursing': 'Nursing',
-    'arts': 'Arts & Sciences',
-    'engineering': 'Engineering',
-    'hospitality': 'Hospitality Management',
-    'criminology': 'Criminology',
-    'midwifery': 'Midwifery'
+    'midwifery': 'Midwifery',
+    'fisheries': 'Fisheries',
+    'it-voc': 'IT (Vocational)',
+    'comp-tech': 'Computer Technician',
+    'architecture': 'Architecture'
   };
   return courseNames[courseCode] || courseCode;
 }

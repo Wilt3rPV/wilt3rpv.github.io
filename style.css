@@ -1164,3 +1164,134 @@ body.modal-open {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+
+/* =========================
+   MOBILE FIXES
+   ========================= */
+
+@media (max-width: 768px) {
+  /* Banner layout - stack vertically */
+  .banner-divider-top {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 16px;
+    gap: 12px;
+    min-height: auto;
+  }
+
+  /* Campus name below logo */
+  #collegeName {
+    font-size: 16px;
+    line-height: 1.3;
+    max-width: 100%;
+    order: 2; /* Move below logo */
+  }
+
+  /* Admin buttons below name */
+  .admin-actions {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .createpost-btn, .logout-btn {
+    padding: 10px 16px;
+    font-size: 14px;
+    flex: 1;
+    min-width: 100px;
+    max-width: 140px;
+  }
+
+  /* Toolbar layout - stack filters */
+  .news-toolbar {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 20px 0 10px 0;
+    gap: 16px;
+  }
+
+  .filter-group {
+    width: 100%;
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Label above dropdown (like Sort by Year) */
+  .year-filter-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 4px;
+  }
+
+  /* Dropdowns full width */
+  #yearFilter, #courseFilter {
+    width: 100%;
+    max-width: 300px;
+    padding: 12px 16px;
+    font-size: 16px; /* Prevent iOS zoom */
+  }
+
+  /* Search section */
+  .news-search {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 300px;
+    margin: 16px auto;
+  }
+
+  .search-label {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  #searchInput {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px; /* Prevent iOS zoom */
+  }
+
+  /* News cards */
+  .news-card {
+    height: 140px;
+    margin-bottom: 16px;
+  }
+
+  .news-title {
+    font-size: 18px;
+  }
+
+  /* Inner content - single column */
+  .inner-content {
+    flex-direction: column;
+    align-items: center;
+    padding: 0 16px 30px 16px;
+  }
+
+  .left-column {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+  #collegeName {
+    font-size: 14px;
+  }
+
+  .createpost-btn, .logout-btn {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+}

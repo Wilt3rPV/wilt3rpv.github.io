@@ -516,7 +516,7 @@ async function showPostModal(postId) {
             'comp-tech': 'Computer Technician',
             'architecture': 'Architecture'
           };
-          const courseDisplay = post.course ? ` • ${courseNames[post.course] || post.course}` : '';
+          const courseDisplay = post.course ? ` | ${courseNames[post.course] || post.course}` : '';
           
           content.innerHTML = `
             <div class="post-loaded">
