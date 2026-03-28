@@ -477,7 +477,6 @@ async function showPostModal(postId) {
           <div class="post-loaded">
             <h2>Error</h2>
             <p>Could not load post. Please try again.</p>
-            <button onclick="closePostModal()">Close</button>
           </div>
         `;
       }, remaining);

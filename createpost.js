@@ -8,6 +8,93 @@ const editId = params.get("edit");
 
 let editPost = null;
 
+const campusDepartments = {
+  prmsuIba: [
+    { value: 'comtech', label: 'College of Communication & Information Technology' },
+    { value: 'indtech', label: 'College of Industrial Technology' },
+    { value: 'education', label: 'College of Education' },
+    { value: 'business', label: 'College of Business Administration' },
+    { value: 'nursing', label: 'College of Nursing' },
+    { value: 'arts', label: 'College of Arts & Sciences' },
+    { value: 'engineering', label: 'College of Engineering' },
+    { value: 'agri', label: 'College of Agriculture & Forestry' },
+    { value: 'hospitality', label: 'College of Hospitality Management' },
+    { value: 'criminology', label: 'College of Criminology' },
+    { value: 'midwifery', label: 'College of Midwifery' }
+  ],
+  prmsuBotolan: [
+    { value: 'comtech', label: 'College of Communication & IT' },
+    { value: 'indtech', label: 'College of Industrial Technology' },
+    { value: 'education', label: 'College of Education' },
+    { value: 'fisheries', label: 'College of Fisheries' }
+  ],
+  macsatIba: [
+    { value: 'comtech', label: 'Computer Studies' },
+    { value: 'it-voc', label: 'IT (Vocational)' },
+    { value: 'comp-tech', label: 'Computer Technician' },
+    { value: 'business', label: 'Business Administration' }
+  ],
+  ccGapo: [
+    { value: 'business', label: 'College of Business & Accountancy' },
+    { value: 'education', label: 'College of Arts, Sciences & Education' },
+    { value: 'comtech', label: 'College of Computer Studies' },
+    { value: 'engineering', label: 'College of Engineering' },
+    { value: 'architecture', label: 'College of Architecture' },
+    { value: 'nursing', label: 'College of Nursing' }
+  ],
+  ccCruz: [
+    { value: 'education', label: 'College of Education' },
+    { value: 'business', label: 'College of Business Administration' },
+    { value: 'comtech', label: 'Information Systems' }
+  ],
+  prmsuMan: [
+    { value: 'comtech', label: 'Communication & Information Technology' },
+    { value: 'indtech', label: 'Industrial Technology' },
+    { value: 'education', label: 'Education' },
+    { value: 'fisheries', label: 'Fisheries' }
+  ],
+  lyceumBotolan: [
+    { value: 'business', label: 'Business Administration' },
+    { value: 'comtech', label: 'Computer Studies' },
+    { value: 'education', label: 'Education' },
+    { value: 'hospitality', label: 'Hospitality Management' }
+  ]
+};
+
+// Populate dropdown based on campus from URL
+const selectedCampus = params.get("college") || document.getElementById("collegeSelect")?.value;
+
+const courseSelect = document.getElementById("courseSelect");
+if (courseSelect && campusDepartments[selectedCampus]) {
+  // Keep the "Select Department..." option
+  courseSelect.innerHTML = '<option value="">NONE...</option>';
+  
+  // Add campus-specific departments
+  campusDepartments[selectedCampus].forEach(dept => {
+    const option = document.createElement("option");
+    option.value = dept.value;
+    option.textContent = dept.label;
+    courseSelect.appendChild(option);
+  });
+}
+
+// Also update when college dropdown changes (for edit mode)
+const collegeSelect = document.getElementById("collegeSelect");
+if (collegeSelect) {
+  collegeSelect.addEventListener("change", function() {
+    const newCampus = this.value;
+    if (courseSelect && campusDepartments[newCampus]) {
+      courseSelect.innerHTML = '<option value="">Select Department...</option>';
+      campusDepartments[newCampus].forEach(dept => {
+        const option = document.createElement("option");
+        option.value = dept.value;
+        option.textContent = dept.label;
+        courseSelect.appendChild(option);
+      });
+    }
+  });
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   const collegeFromUrl = params.get("college");
   const bannerInput = document.getElementById("banner");
