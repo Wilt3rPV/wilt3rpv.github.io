@@ -9,7 +9,7 @@
       BODY {       
         opacity: 0;
         transform: translateY(-50px);
-        transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        transition: opacity 0.3s ease-out, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
       }
       body.loaded {
         opacity: 1;
@@ -37,6 +37,7 @@
         display: flex;
         gap: 10px;
         align-items: center;
+        justify-self: end;
       }
 
       .image-overlay {
@@ -233,7 +234,7 @@
       @media (max-width: 768px) {
         .banner-logo {
           height: 50px;
-          margin-right: 10px;
+          margin-bottom: 4px;
         }
       }
 
@@ -268,7 +269,7 @@
         <span class="toast-text" id="toastText">Loading...</span>
       </div>
     </div>
-
+    
     <div class="banner-divider-top">
       <img src="unicols2.png" class="banner-logo" alt="UNI-COL News">
       <h1 id="collegeName"></h1>
@@ -285,14 +286,18 @@
         <div class="news-toolbar">
           <div class="filter-group">
             <label for="yearFilter" class="year-filter-label">Sort by Year</label>
-            <select id="yearFilter">
-              <option value="all">All</option>
-            </select>
+            <div class="select-display" id="yearFilterDisplay">All</div>
+              <select id="yearFilter" class="select-hidden">
+                <option value="all">All</option>
+              </select>
           </div>
           
           <div class="filter-group">
             <label for="courseFilter" class="year-filter-label">Sort by department</label>
-            <select id="courseFilter">
+            <div class="select-display" id="courseFilterDisplay">All</div>
+  
+            <!-- Real select (hidden but clickable) -->
+            <select id="courseFilter" class="select-hidden">
               <option value="all">All</option>
             </select>
           </div>

@@ -20,71 +20,84 @@ const addBtn = document.getElementById("addCalendarRowBtn");
 
 const campusDepartments = {
   prmsuIba: [
-    { value: 'comtech', label: 'Communication & Information Technology' },
-    { value: 'indtech', label: 'Industrial Technology' },
-    { value: 'education', label: 'Education' },
-    { value: 'business', label: 'Business Administration' },
-    { value: 'nursing', label: 'Nursing' },
-    { value: 'arts', label: 'Arts & Sciences' },
-    { value: 'engineering', label: 'Engineering' },
-    { value: 'agri', label: 'Agriculture & Forestry' },
-    { value: 'hospitality', label: 'Hospitality Management' },
-    { value: 'criminology', label: 'Criminology' },
-    { value: 'midwifery', label: 'Midwifery' }
+    { value: 'comtech', label: 'Communication & Information Technology', short: 'ComTech' },
+    { value: 'indtech', label: 'Industrial Technology', short: 'IndTech' },
+    { value: 'education', label: 'Education', short: 'Educ' },
+    { value: 'business', label: 'Business Administration', short: 'Business' },
+    { value: 'nursing', label: 'Nursing', short: 'Nursing' },
+    { value: 'arts', label: 'Arts & Sciences', short: 'Arts & Sci' },
+    { value: 'engineering', label: 'Engineering', short: 'Eng' },
+    { value: 'agri', label: 'Agriculture & Forestry', short: 'Agri' },
+    { value: 'hospitality', label: 'Hospitality Management', short: 'Hospitality' },
+    { value: 'criminology', label: 'Criminology', short: 'Crim' },
+    { value: 'midwifery', label: 'Midwifery', short: 'Midwifery' }
   ],
   prmsuBotolan: [
-    { value: 'comtech', label: 'Communication & IT' },
-    { value: 'indtech', label: 'Industrial Technology' },
-    { value: 'education', label: 'Education' },
-    { value: 'fisheries', label: 'Fisheries' }
+    { value: 'comtech', label: 'Communication & IT', short: 'ComTech' },
+    { value: 'indtech', label: 'Industrial Technology', short: 'IndTech' },
+    { value: 'education', label: 'Education', short: 'Educ' },
+    { value: 'fisheries', label: 'Fisheries', short: 'Fisheries' }
   ],
   macsatIba: [
-    { value: 'comtech', label: 'Computer Studies' },
-    { value: 'it-voc', label: 'IT (Vocational)' },
-    { value: 'comp-tech', label: 'Computer Technician' },
-    { value: 'business', label: 'Business Administration' }
+    { value: 'comtech', label: 'Computer Studies', short: 'CompSci' },
+    { value: 'it-voc', label: 'IT (Vocational)', short: 'IT-Voc' },
+    { value: 'comp-tech', label: 'Computer Technician', short: 'CompTech' },
+    { value: 'business', label: 'Business Administration', short: 'Business' }
   ],
   ccGapo: [
-    { value: 'business', label: 'Business & Accountancy' },
-    { value: 'education', label: 'Arts, Sciences & Education' },
-    { value: 'comtech', label: 'Computer Studies' },
-    { value: 'engineering', label: 'Engineering' },
-    { value: 'architecture', label: 'Architecture' },
-    { value: 'nursing', label: 'Nursing' }
+    { value: 'business', label: 'Business & Accountancy', short: 'Business' },
+    { value: 'education', label: 'Arts, Sciences & Education', short: 'ASE' },
+    { value: 'comtech', label: 'Computer Studies', short: 'CompSci' },
+    { value: 'engineering', label: 'Engineering', short: 'Eng' },
+    { value: 'architecture', label: 'Architecture', short: 'Arch' },
+    { value: 'nursing', label: 'Nursing', short: 'Nursing' }
   ],
   ccCruz: [
-    { value: 'education', label: 'Education' },
-    { value: 'business', label: 'Business Administration' },
-    { value: 'comtech', label: 'Information Systems' }
+    { value: 'education', label: 'Education', short: 'Educ' },
+    { value: 'business', label: 'Business Administration', short: 'Business' },
+    { value: 'comtech', label: 'Information Systems', short: 'InfoSys' }
   ],
   prmsuMan: [
-    { value: 'comtech', label: 'Communication & IT' },
-    { value: 'indtech', label: 'Industrial Technology' },
-    { value: 'education', label: 'Education' },
-    { value: 'fisheries', label: 'Fisheries' }
+    { value: 'comtech', label: 'Communication & IT', short: 'ComTech' },
+    { value: 'indtech', label: 'Industrial Technology', short: 'IndTech' },
+    { value: 'education', label: 'Education', short: 'Educ' },
+    { value: 'fisheries', label: 'Fisheries', short: 'Fisheries' }
   ],
   lyceumBotolan: [
-    { value: 'business', label: 'Business Administration' },
-    { value: 'comtech', label: 'Computer Studies' },
-    { value: 'education', label: 'Education' },
-    { value: 'hospitality', label: 'Hospitality Management' }
+    { value: 'business', label: 'Business Administration', short: 'Business' },
+    { value: 'comtech', label: 'Computer Studies', short: 'CompSci' },
+    { value: 'education', label: 'Education', short: 'Educ' },
+    { value: 'hospitality', label: 'Hospitality Management', short: 'Hospitality' }
   ]
 };
 
 // Function to populate course filter based on campus
 function populateCourseFilter() {
-  const courseFilter = document.getElementById("courseFilter");
-  if (!courseFilter) return;
+  const select = document.getElementById("courseFilter");
+  const display = document.getElementById("courseFilterDisplay");
   
-  if (campusDepartments[selectedCollege]) {
-    courseFilter.innerHTML = '<option value="all">All</option>';
-    campusDepartments[selectedCollege].forEach(dept => {
-      const option = document.createElement("option");
-      option.value = dept.value;
-      option.textContent = dept.label;
-      courseFilter.appendChild(option);
-    });
-  }
+  if (!select || !display || !campusDepartments[selectedCollege]) return;
+  
+  // Build options with FULL names
+  let optionsHTML = '<option value="all">All</option>';
+  campusDepartments[selectedCollege].forEach(dept => {
+    optionsHTML += `<option value="${dept.value}" data-short="${dept.short}">${dept.label}</option>`;
+  });
+  select.innerHTML = optionsHTML;
+  
+  // On change - update display with SHORT name
+  select.addEventListener("change", function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const shortName = selectedOption.dataset.short || selectedOption.textContent;
+    display.textContent = shortName;
+    
+    // Trigger filter
+    currentPage = 1;
+    applyAllFilters();
+  });
+  
+  // Set initial display
+  display.textContent = "All";
 }
 
 // =========================
@@ -151,7 +164,7 @@ const themes = {
     divider_bottom: "#f2ff7e"
   },
   ccCruz: {
-    name: "Collumban College - Sta. Cruz Campus",
+    name: "Columban College - Sta. Cruz Campus",
     bg1: "#4062d1",
     bg2: "#c3c5a0",
     divider_top: "#6580d8",
@@ -170,6 +183,20 @@ const themes = {
     bg2: "#942525",
     divider_top: "#961313",
     divider_bottom: "#942525"
+  },
+  prmsuCaste: {
+    name: "President Ramon Magsaysay State University - Castillejos Campus",
+    bg1: "",
+    bg2: "",
+    divider_top: "",
+    divider_bottom: "",
+  },
+  gcGapo: {
+    name: "Gordon College - Olongapo Campus",
+    bg1: "#0fac31",
+    bg2: "#ddce00",
+    divider_top: "#0c530a",
+    divider_bottom: "#ddce00",
   },
   lyceumBotolan: {
     name: "Lyceum Of Western Luzon - Iba Campus",
@@ -673,9 +700,12 @@ function getPostYear(post) {
 }
 
 function populateYearFilter() {
-  if (!yearFilter) return;
+  const select = document.getElementById("yearFilter");
+  const display = document.getElementById("yearFilterDisplay");
+  
+  if (!select || !display) return;
 
-  yearFilter.innerHTML = '<option value="all">All</option>';
+  select.innerHTML = '<option value="all">All</option>';
   
   const years = [...new Set(
     allPosts.map(post => getPostYear(post)).filter(year => !isNaN(year))
@@ -684,9 +714,21 @@ function populateYearFilter() {
   years.forEach(year => {
     const option = document.createElement("option");
     option.value = year;
-    option.textContent = year;
-    yearFilter.appendChild(option);
+    option.textContent = year; // Full year in list
+    option.dataset.short = year; // Same for year
+    select.appendChild(option);
   });
+  
+  // On change - update display
+  select.addEventListener("change", function() {
+    const selectedOption = this.options[this.selectedIndex];
+    display.textContent = selectedOption.dataset.short || selectedOption.textContent;
+    currentPage = 1;
+    applyAllFilters();
+  });
+  
+  // Set initial display
+  display.textContent = "All";
 }
 
 function renderPosts(postsToRender) {

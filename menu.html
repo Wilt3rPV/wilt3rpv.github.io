@@ -11,7 +11,7 @@
       body {
         opacity: 0;
         transform: translateY(-50px);
-        transition: opacity 0.3s ease, transform 0.3s ease;
+        transition: opacity 0.3s ease-out, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
       }
 
       body.loaded {
@@ -67,6 +67,7 @@
   <body class="college-picker">
     <div class="banner-divider-top">
       <img src="unicols2.png" class="banner-logo" alt="UNI-COL News">
+      <h1>Select a campus</h1>
     </div>
     
     <div class="content">
@@ -85,7 +86,11 @@
 
           <button class="btn btn4" onclick="window.location.href='NEWS.html?college=prmsuMan'"><span>President Ramon Magsaysay<br>State University - Masinloc Campus</span></button>
 
+          <button class="btn " onclick="window.location.href='NEWS.html?college=prmsuCaste'"><span>President Ramon Magsaysay<br>State University - Castillejos Campus</span></button>
+
           <button class="btn btn5" onclick="window.location.href='NEWS.html?college=ccCruz'"><span>Columban College<br>- Sta. Cruz Campus</span></button>
+
+          <button class="btn " onclick="window.location.href='NEWS.html?college=gcGapo'"><span>Gordon College<br>- Olongapo Campus</span></button>
 
           <button class="btn btn6" onclick="window.location.href='NEWS.html?college=lyceumBotolan'"><span>Lyceum Of Western Luzon<br>- Botolan Campus</span></button>
         </div>
