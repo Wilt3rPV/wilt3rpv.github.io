@@ -590,6 +590,38 @@
     .toast.loading .toast-text {
       animation: pulse 1.5s ease-in-out infinite;
     }
+
+    /* Dust particles in the air */
+    .particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      animation: drift 20s infinite linear;
+    }
+
+    @keyframes drift {
+      from { 
+        transform: translateY(100vh) translateX(0); 
+        opacity: 0; 
+      }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.6; }
+      to { 
+        transform: translateY(-10vh) translateX(30px); 
+        opacity: 0; 
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -601,8 +633,11 @@
     </div>
   </div>
 
+  
   <div class="bg-image"></div>
   <div class="bg-overlay"></div>
+
+  <div class="particles" id="particles"></div>
 
   <div class="card" id="card">
     <div class="admin-badge" id="adminBadge">ADMIN</div>
@@ -638,6 +673,11 @@
           <button type="submit" class="form-button">Sign In</button>
           <div class="form-error hidden" id="loginError"></div>
         </form>
+
+        <!-- ADD THIS: Forgot password link -->
+        <div class="form-toggle" style="margin-top: 16px;">
+          <a onclick="showForgotPasswordView()" style="cursor: pointer; color: rgba(255,255,255,0.7); font-size: 14px;">Forgot password?</a>
+        </div>
 
         <!-- <div class="form-toggle">
           Need to register an admin? <a onclick="showRegisterView()">Register</a>
@@ -681,6 +721,28 @@
           <p class="auth-subtitle" style="margin-bottom: 16px;">Need to add another admin?</p>
           <button class="form-button" onclick="showRegisterFromLoggedIn()">Register New Admin</button>
         </div>
+      </div>
+
+      <!-- Forgot Password View -->
+      <div id="forgotPasswordView" class="hidden">
+        <h2 class="auth-header">Reset Password</h2>
+        <p class="auth-subtitle">Enter your email to receive reset instructions</p>
+        
+        <form onsubmit="handleForgotPassword(event)">
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" id="forgotEmail" placeholder="admin@example.com" required>
+          </div>
+          <button type="submit" class="form-button">Send Reset Link</button>
+          <div class="form-success hidden" id="forgotSuccess">
+            Check your email for reset instructions!
+          </div>
+          <div class="form-error hidden" id="forgotError"></div>
+        </form>
+
+        <!-- <div class="form-toggle" style="margin-top: 20px;">
+          <a onclick="showLoginView()" style="cursor: pointer;">Back to Login</a>
+        </div> -->
       </div>
 
     </div>
@@ -958,24 +1020,104 @@
     }
 
     function handleBackButton() {
-      // Check which view is currently visible
+      const forgotView = document.getElementById('forgotPasswordView');
+      
+      // If on forgot password view, go back to login
+      if (!forgotView.classList.contains('hidden')) {
+        showLoginView();
+        return;
+      }
+      
+      // Rest of existing back button logic...
       const loginView = document.getElementById('loginView');
       const registerView = document.getElementById('registerView');
       const loggedInView = document.getElementById('loggedInView');
       
-      // If on register view, go back to logged in view (if admin) or login view
       if (!registerView.classList.contains('hidden')) {
         if (currentUser && isAdmin) {
           showLoggedInView();
         } else {
           showLoginView();
         }
-      } 
-      // If on login or logged in view, go back to main content
-      else {
+      } else {
         showMainContent();
       }
     }
+
+    // Create dust particles
+    function createParticles() {
+        const container = document.getElementById('particles');
+        for (let i = 0; i < 40; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = (20 + Math.random() * 60) + '%'; // Center area mostly
+            p.style.animationDelay = Math.random() * 20 + 's';
+            p.style.animationDuration = (15 + Math.random() * 10) + 's';
+            container.appendChild(p);
+        }
+    }
+    createParticles();
+
+    // Show forgot password view
+    function showForgotPasswordView() {
+      document.getElementById('loginView').classList.add('hidden');
+      document.getElementById('registerView').classList.add('hidden');
+      document.getElementById('loggedInView').classList.add('hidden');
+      document.getElementById('forgotPasswordView').classList.remove('hidden');
+      clearErrors();
+    }
+
+    // Handle forgot password
+    async function handleForgotPassword(e) {
+      e.preventDefault();
+      const errorDiv = document.getElementById('forgotError');
+      const successDiv = document.getElementById('forgotSuccess');
+      errorDiv.classList.add('hidden');
+      successDiv.classList.add('hidden');
+
+      const email = document.getElementById('forgotEmail').value;
+
+      try {
+        showToast('Sending reset email...', 'loading');
+        
+        const { error } = await db.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin + '/index.html?reset=success'
+        });
+
+        if (error) throw error;
+
+        hideToast();
+        showToast('Reset email sent!', 'success');
+        successDiv.classList.remove('hidden');
+        
+        // Clear form
+        document.getElementById('forgotEmail').value = '';
+        
+      } catch (err) {
+        hideToast();
+        errorDiv.textContent = err.message;
+        errorDiv.classList.remove('hidden');
+      }
+    }
+
+    // Update showLoginView to hide forgot password
+    function showLoginView() {
+      document.getElementById('loginView').classList.remove('hidden');
+      document.getElementById('registerView').classList.add('hidden');
+      document.getElementById('loggedInView').classList.add('hidden');
+      document.getElementById('forgotPasswordView').classList.add('hidden');
+      clearErrors();
+    }
+
+    // Handle password reset success from email link
+    window.addEventListener('load', () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('reset') === 'success') {
+        showToast('Password reset successful! Please log in.', 'success');
+        setTimeout(hideToast, 3000);
+      }
+    });
+
   </script>
 </body>
 </html>
