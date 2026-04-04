@@ -33,15 +33,16 @@ const campusDepartments = {
     { value: 'midwifery', label: 'Midwifery', short: 'Midwifery' }
   ],
   prmsuBotolan: [
-    { value: 'comtech', label: 'Communication & IT', short: 'ComTech' },
-    { value: 'indtech', label: 'Industrial Technology', short: 'IndTech' },
+    { value: 'agri', label: 'Agriculture & Forestry', short: 'Agri' },
+    { value: 'education', label: 'Education', short: 'Educ' }
+  ],
+  prmsuCaste: [
     { value: 'education', label: 'Education', short: 'Educ' },
-    { value: 'fisheries', label: 'Fisheries', short: 'Fisheries' }
+    { value: 'business', label: 'Business Administration', short: 'Business' },
+    { value: 'comtech', label: 'Communication & Information Technology', short: 'ComTech' }
   ],
   macsatIba: [
-    { value: 'comtech', label: 'Computer Studies', short: 'CompSci' },
-    { value: 'it-voc', label: 'IT (Vocational)', short: 'IT-Voc' },
-    { value: 'comp-tech', label: 'Computer Technician', short: 'CompTech' },
+    { value: 'comtech', label: 'Computer Science', short: 'CompSci' },
     { value: 'business', label: 'Business Administration', short: 'Business' }
   ],
   ccGapo: [
@@ -58,10 +59,19 @@ const campusDepartments = {
     { value: 'comtech', label: 'Information Systems', short: 'InfoSys' }
   ],
   prmsuMan: [
-    { value: 'comtech', label: 'Communication & IT', short: 'ComTech' },
-    { value: 'indtech', label: 'Industrial Technology', short: 'IndTech' },
-    { value: 'education', label: 'Education', short: 'Educ' },
-    { value: 'fisheries', label: 'Fisheries', short: 'Fisheries' }
+    { value: 'comtech', label: 'Communication & Information Technology', short: 'ComTech' },
+    { value: 'business', label: 'Business Administration', short: 'Business' },
+    { value: 'education', label: 'Education', short: 'Educ' }
+  ],
+  prmsuCruz: [
+    { value: 'comtech', label: 'Communication & Information Technology', short: 'CompTech' },
+    { value: 'education', label: 'Education', short: 'Educ' }
+  ],
+  gcGapo: [
+    { value: 'business', label: 'Business & Accountancy', short: 'Buisness' },
+    { value: 'comtech', label: 'Computer Studies', short: 'CompSci' },
+    { value: 'education', label: 'Arts, Sciences & Education', short: 'ASE' },
+    { value: 'hospitality', label: 'Hospitality and Tourism Management', short: 'Hospitality' }
   ],
   lyceumBotolan: [
     { value: 'business', label: 'Business Administration', short: 'Business' },
@@ -186,17 +196,17 @@ const themes = {
   },
   prmsuCaste: {
     name: "President Ramon Magsaysay State University - Castillejos Campus",
-    bg1: "",
-    bg2: "",
-    divider_top: "",
-    divider_bottom: "",
+    bg1: "#bd2d2d",
+    bg2: "#6e1b1b",
+    divider_top: "#D2B48C",
+    divider_bottom: "#D2B48C"
   },
   gcGapo: {
     name: "Gordon College - Olongapo Campus",
     bg1: "#0fac31",
     bg2: "#ddce00",
     divider_top: "#0c530a",
-    divider_bottom: "#ddce00",
+    divider_bottom: "#ddce00"
   },
   lyceumBotolan: {
     name: "Lyceum Of Western Luzon - Iba Campus",
@@ -832,3 +842,110 @@ function customModal(message, showCancel, callback) {
     if (callback) callback(false);
   };
 }
+
+
+
+
+async function handleLogout() {
+  showToast('Logging out...', 'loading');
+  try {
+    await signOut();
+    showToast('Logged out successfully!', 'success');
+    setTimeout(() => {
+      hideToast();
+      window.location.reload();
+    }, 1200);
+  } catch (err) {
+    showError('Error logging out');
+  }
+}
+
+function goToLogin() {
+  window.location.href = 'index.html';
+}
+
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+      const modal = document.getElementById('postModal');
+      const content = document.getElementById('postModalContent');
+      if (modal) {
+        modal.classList.remove('show', 'closing');
+        modal.classList.add('hidden');
+        document.documentElement.classList.remove('modal-open');
+        document.body.classList.remove('modal-open');
+      }
+      if (content) {
+        content.innerHTML = '';
+      }
+    }
+});
+
+window.addEventListener('authStateChanged', (e) => {
+  const { user, isAdmin } = e.detail;
+  updateNewsUI(user, isAdmin);
+});
+
+async function initAuth() {
+  await checkAuth();
+}
+
+function updateNewsUI(user, admin) {
+  const createBtn = document.getElementById('createPostBtn');
+  const loginBtn = document.getElementById('adminLoginBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const addCalendarBtn = document.getElementById('addCalendarRowBtn');
+
+  if (user && admin) {
+    createBtn.classList.add('visible');
+    logoutBtn.classList.add('visible');
+    addCalendarBtn.classList.add('visible');
+    loginBtn.classList.add('hidden');
+  } else {
+    createBtn.classList.remove('visible');
+    logoutBtn.classList.remove('visible');
+    addCalendarBtn.classList.remove('visible');
+    loginBtn.classList.remove('hidden');
+  }
+}
+
+function openImageOverlay(imageSrc) {
+  const overlay = document.getElementById('imageOverlay');
+  const fullImage = document.getElementById('fullImage');
+  document.body.style.overflow = 'hidden';
+  fullImage.src = imageSrc;
+  overlay.classList.remove('closing');
+  overlay.classList.add('visible');
+}
+
+function closeImageOverlay() {
+  const overlay = document.getElementById('imageOverlay');
+  const fullImage = document.getElementById('fullImage');
+  overlay.classList.add('closing');
+  overlay.classList.remove('visible');
+  setTimeout(() => {
+    overlay.classList.remove('closing');
+    fullImage.src = '';
+    document.body.style.overflow = '';
+  }, 350);
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const overlay = document.getElementById('imageOverlay');
+    if (overlay.classList.contains('visible')) {
+      closeImageOverlay();
+    }
+    const postModal = document.getElementById('postModal');
+      if (postModal.classList.contains('show')) {
+      closePostModal();
+    }
+  }
+});
+
+document.getElementById('imageOverlay').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeImageOverlay();
+  }
+});
+
+initAuth();

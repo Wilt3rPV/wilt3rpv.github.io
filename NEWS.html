@@ -18,27 +18,6 @@
       .btn {
         width: 800px;
       }
-      .admin-only {
-        display: none !important;
-      }
-      .admin-only.visible {
-        display: flex !important;
-      }
-      .logout-btn {
-        background: rgba(255, 100, 100, 0.9) !important;
-        color: #fff !important;
-        border: 1px solid rgba(0,0,0,.25);
-        margin-left: 10px;
-      }
-      .logout-btn:hover {
-        background: rgba(255, 80, 80, 1) !important;
-      }
-      .admin-actions {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        justify-self: end;
-      }
 
       .image-overlay {
         position: fixed;
@@ -276,7 +255,7 @@
       <div class="admin-actions">
         <button class="createpost-btn admin-only" id="createPostBtn" onclick="goCreate()">Create Post</button>
         <button class="createpost-btn logout-btn admin-only" id="logoutBtn" onclick="handleLogout()">Logout</button>
-        <button class="createpost-btn" id="adminLoginBtn" onclick="goToLogin()">Admin Login</button>
+        <!-- <button class="createpost-btn" id="adminLoginBtn" onclick="goToLogin()">Admin Login</button> -->
       </div>
     </div>
 
@@ -359,110 +338,5 @@
 
     <script src="news.js"></script>
     <script src="functions.js"></script>
-    <script>
-      window.addEventListener('pageshow', (event) => {
-        if (event.persisted) {
-          const modal = document.getElementById('postModal');
-          const content = document.getElementById('postModalContent');
-          if (modal) {
-            modal.classList.remove('show', 'closing');
-            modal.classList.add('hidden');
-            document.documentElement.classList.remove('modal-open');
-            document.body.classList.remove('modal-open');
-          }
-          if (content) {
-            content.innerHTML = '';
-          }
-        }
-      });
-
-      window.addEventListener('authStateChanged', (e) => {
-        const { user, isAdmin } = e.detail;
-        updateNewsUI(user, isAdmin);
-      });
-
-      async function initAuth() {
-        await checkAuth();
-      }
-
-      function updateNewsUI(user, admin) {
-        const createBtn = document.getElementById('createPostBtn');
-        const loginBtn = document.getElementById('adminLoginBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const addCalendarBtn = document.getElementById('addCalendarRowBtn');
-
-        if (user && admin) {
-          createBtn.classList.add('visible');
-          logoutBtn.classList.add('visible');
-          addCalendarBtn.classList.add('visible');
-          loginBtn.classList.add('hidden');
-        } else {
-          createBtn.classList.remove('visible');
-          logoutBtn.classList.remove('visible');
-          addCalendarBtn.classList.remove('visible');
-          loginBtn.classList.remove('hidden');
-        }
-      }
-
-      async function handleLogout() {
-        showToast('Logging out...', 'loading');
-        try {
-          await signOut();
-          showToast('Logged out successfully!', 'success');
-          setTimeout(() => {
-            hideToast();
-            window.location.reload();
-          }, 1200);
-        } catch (err) {
-          showError('Error logging out');
-        }
-      }
-
-      function goToLogin() {
-        window.location.href = 'index.html';
-      }
-
-      function openImageOverlay(imageSrc) {
-        const overlay = document.getElementById('imageOverlay');
-        const fullImage = document.getElementById('fullImage');
-        document.body.style.overflow = 'hidden';
-        fullImage.src = imageSrc;
-        overlay.classList.remove('closing');
-        overlay.classList.add('visible');
-      }
-
-      function closeImageOverlay() {
-        const overlay = document.getElementById('imageOverlay');
-        const fullImage = document.getElementById('fullImage');
-        overlay.classList.add('closing');
-        overlay.classList.remove('visible');
-        setTimeout(() => {
-          overlay.classList.remove('closing');
-          fullImage.src = '';
-          document.body.style.overflow = '';
-        }, 350);
-      }
-
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          const overlay = document.getElementById('imageOverlay');
-          if (overlay.classList.contains('visible')) {
-            closeImageOverlay();
-          }
-          const postModal = document.getElementById('postModal');
-          if (postModal.classList.contains('show')) {
-            closePostModal();
-          }
-        }
-      });
-
-      document.getElementById('imageOverlay').addEventListener('click', function(e) {
-        if (e.target === this) {
-          closeImageOverlay();
-        }
-      });
-
-      initAuth();
-    </script>
   </body>
 </html>

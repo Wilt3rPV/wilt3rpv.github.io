@@ -19,19 +19,19 @@ const campusDepartments = {
     { value: 'engineering', label: 'College of Engineering' },
     { value: 'agri', label: 'College of Agriculture & Forestry' },
     { value: 'hospitality', label: 'College of Hospitality Management' },
-    { value: 'criminology', label: 'College of Criminology' },
-    { value: 'midwifery', label: 'College of Midwifery' }
+    { value: 'criminology', label: 'College of Criminology' }
   ],
   prmsuBotolan: [
-    { value: 'comtech', label: 'College of Communication & IT' },
-    { value: 'indtech', label: 'College of Industrial Technology' },
+    { value: 'agri', label: 'College of Agriculture & Forestry' },
+    { value: 'education', label: 'College of Education' }
+  ],
+  prmsuCaste: [
     { value: 'education', label: 'College of Education' },
-    { value: 'fisheries', label: 'College of Fisheries' }
+    { value: 'business', label: 'College of Business Administration' },
+    { value: 'comtech', label: 'College of Communication & Information Technology' }
   ],
   macsatIba: [
-    { value: 'comtech', label: 'Computer Studies' },
-    { value: 'it-voc', label: 'IT (Vocational)' },
-    { value: 'comp-tech', label: 'Computer Technician' },
+    { value: 'comtech', label: 'Computer Science' },
     { value: 'business', label: 'Business Administration' }
   ],
   ccGapo: [
@@ -48,10 +48,19 @@ const campusDepartments = {
     { value: 'comtech', label: 'Information Systems' }
   ],
   prmsuMan: [
-    { value: 'comtech', label: 'Communication & Information Technology' },
-    { value: 'indtech', label: 'Industrial Technology' },
-    { value: 'education', label: 'Education' },
-    { value: 'fisheries', label: 'Fisheries' }
+    { value: 'comtech', label: 'College of Communication & Information Technology' },
+    { value: 'business', label: 'College of Business Administration' },
+    { value: 'education', label: 'College Of Education' }
+  ],
+  prmsuCruz: [
+    { value: 'comtech', label: 'College of Communication & Information Technology' },
+    { value: 'education', label: 'College Of Education' }
+  ],
+  gcGapo: [
+    { value: 'business', label: 'College of Business & Accountancy' },
+    { value: 'comtech', label: 'College of Computer Studies' },
+    { value: 'education', label: 'College of Arts, Sciences & Education' },
+    { value: 'hospitality', label: 'College of Hospitality and Tourism Management' }
   ],
   lyceumBotolan: [
     { value: 'business', label: 'Business Administration' },

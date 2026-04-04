@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome</title>
+  <title>Welcome to UniCol!</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="database.js"></script>
   <style>
@@ -21,9 +21,7 @@
       position: relative;
     }
 
-    /* Background with blur effect */
-    .bg-image,
-    .bg-overlay {
+    .bg-image, .bg-overlay {
       position: fixed;
       inset: 0;
       pointer-events: none;
@@ -44,23 +42,17 @@
       z-index: 1;
     }
 
-    /* Main card - GLASS/PINK style like dividers */
     .card {
       position: relative;
       z-index: 2;
       width: min(560px, 100%);
       min-height: min(630px, 92vh);
-      
-      /* Glass effect matching dividers */
       background: color-mix(in srgb, #4b5964 60%, transparent);
       backdrop-filter: blur(20px) saturate(180%);
       -webkit-backdrop-filter: blur(20px) saturate(180%);
       border-radius: 36px;
       border: 1px solid rgba(255, 255, 255, 0.4);
-      box-shadow: 
-        0 10px 40px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.5);
-      
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -72,10 +64,8 @@
       animation: cardIn 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
       animation-delay: 0.45s;
       opacity: 0;
-      /* transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1); */
     }
 
-    /* Shine effect on top of card */
     .card::before {
       content: '';
       position: absolute;
@@ -83,11 +73,7 @@
       left: 0;
       right: 0;
       height: 50%;
-      background: linear-gradient(
-        180deg,
-        rgba(255,255,255,0.4) 0%,
-        rgba(255,255,255,0) 100%
-      );
+      background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
       pointer-events: none;
       z-index: 0;
     }
@@ -138,7 +124,6 @@
       transform: translateY(0);
     }
 
-    /* Logo with glass effect */
     .logo-img {
       width: min(400px, 100%);
       height: auto;
@@ -170,18 +155,14 @@
       transition: all 0.3s ease;
     }
 
-    /* Main button - glass style */
     .btn {
       border: 0;
       cursor: pointer;
       padding: 20px 64px;
       border-radius: 999px;
-      
-      /* Glass effect */
       background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(10px) saturate(150%);
       border: 1px solid rgba(255, 255, 255, 0.5);
-      
       color: #333;
       font-size: 16px;
       font-weight: 650;
@@ -203,19 +184,15 @@
       filter: brightness(0.98);
     }
 
-   /* Admin login/panel button - glass style WITH animation */
     .admin-login-btn {
       position: absolute;
       top: 20px;
       right: 20px;
       padding: 10px 20px;
       border-radius: 999px;
-      
-      /* Glass effect */
       background: rgba(255, 255, 255, 0.2);
       backdrop-filter: blur(10px) saturate(150%);
       border: 2px solid rgba(255, 255, 255, 0.4);
-      
       color: #fff;
       font-size: 14px;
       cursor: pointer;
@@ -244,19 +221,15 @@
       display: none;
     }
 
-    /* Back button - glass style WITH animation */
     .back-btn {
       position: absolute;
       top: 20px;
       left: 20px;
       padding: 10px 20px;
       border-radius: 999px;
-      
-      /* Glass effect */
       background: rgba(255, 255, 255, 0.2);
       backdrop-filter: blur(10px) saturate(150%);
       border: 2px solid rgba(255, 255, 255, 0.4);
-      
       color: #fff;
       font-size: 14px;
       cursor: pointer;
@@ -283,7 +256,6 @@
       display: block;
     }
 
-    /* Admin badge - glass style */
     .admin-badge {
       position: absolute;
       top: 20px;
@@ -291,12 +263,9 @@
       transform: translateX(-50%);
       padding: 8px 16px;
       border-radius: 999px;
-      
-      /* Glass effect */
       background: rgba(81, 207, 102, 0.8);
       backdrop-filter: blur(10px) saturate(150%);
       border: 1px solid rgba(255, 255, 255, 0.4);
-      
       color: #fff;
       font-size: 12px;
       font-weight: 600;
@@ -312,7 +281,6 @@
       display: block;
     }
 
-    /* Auth forms - glass inputs */
     .auth-header {
       color: #fff;
       font-size: 28px;
@@ -345,12 +313,9 @@
       width: 100%;
       padding: 14px 16px;
       border-radius: 12px;
-      
-      /* Glass effect */
       background: rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(5px);
       border: 1px solid rgba(255, 255, 255, 0.3);
-      
       color: #fff;
       font-size: 16px;
       outline: none;
@@ -367,17 +332,36 @@
       color: rgba(255,255,255,0.5);
     }
 
-    /* Form button - glass style WITH animation */
+    .form-input-log {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.15s ease;
+    }
+
+    .form-input-log:focus {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.6);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
+    }
+
+    .form-input-log::placeholder {
+      color: rgba(255,255,255,0.5);
+    }
+
     .form-button {
       width: 100%;
       padding: 16px;
       border-radius: 12px;
       border: 1px solid rgba(255, 255, 255, 0.4);
-      
-      /* Glass effect */
       background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(10px) saturate(150%);
-      
       color: #333;
       font-size: 16px;
       font-weight: 600;
@@ -400,7 +384,6 @@
       filter: brightness(0.98);
     }
 
-    /* Logout button - glass style WITH animation */
     .logout-btn {
       margin-top: 20px;
       background: rgba(255, 100, 100, 0.8);
@@ -461,7 +444,6 @@
 
     .hidden { display: none !important; }
 
-    /* Animations */
     @keyframes textIn {
       from { opacity: 0; transform: translateY(-45px); }
       to { opacity: 1; transform: translateY(-70px); }
@@ -504,7 +486,7 @@
       .auth-header { font-size: 24px; }
     }
 
-    /* Toast Notification Styles - Glass */
+    /* Toast Notification Styles */
     .toast-container {
       position: fixed;
       top: 20px;
@@ -522,11 +504,9 @@
     }
 
     .toast {
-      /* Glass effect */
       background: color-mix(in srgb, #4b5964 80%, transparent);
       backdrop-filter: blur(20px) saturate(180%);
       border: 1px solid rgba(255, 255, 255, 0.4);
-      
       color: #fff;
       padding: 16px 28px;
       border-radius: 50px;
@@ -591,7 +571,6 @@
       animation: pulse 1.5s ease-in-out infinite;
     }
 
-    /* Dust particles in the air */
     .particles {
       position: absolute;
       width: 100%;
@@ -610,18 +589,104 @@
     }
 
     @keyframes drift {
-      from { 
-        transform: translateY(100vh) translateX(0); 
-        opacity: 0; 
-      }
+      from { transform: translateY(100vh) translateX(0); opacity: 0; }
       10% { opacity: 0.6; }
       90% { opacity: 0.6; }
-      to { 
-        transform: translateY(-10vh) translateX(30px); 
-        opacity: 0; 
-      }
+      to { transform: translateY(-10vh) translateX(30px); opacity: 0; }
     }
 
+    /* Code input styles */
+    .code-display {
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .code-display-label {
+      color: rgba(255,255,255,0.7);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .code-display-value {
+      color: #fff;
+      font-size: 32px;
+      font-weight: bold;
+      letter-spacing: 8px;
+      font-family: monospace;
+      text-shadow: 0 0 20px rgba(255,255,255,0.5);
+    }
+
+    .code-warning {
+      color: #ff6b6b;
+      font-size: 12px;
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    .code-inputs {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .code-input {
+      width: 45px;
+      height: 55px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      backdrop-filter: blur(5px);
+      transition: all 0.2s ease;
+    }
+
+    .code-input:focus {
+      background: rgba(255,255,255,0.25);
+      border-color: rgba(255,255,255,0.6);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
+      outline: none;
+    }
+
+    .admin-panel-link {
+      color: rgba(255,255,255,0.6);
+      font-size: 12px;
+      margin-top: 16px;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .admin-panel-link:hover {
+      color: #fff;
+    }
+
+    .copy-btn {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .copy-btn.copied {
+      background: rgba(81, 207, 102, 0.6);
+    }
   </style>
 </head>
 <body>
@@ -633,7 +698,6 @@
     </div>
   </div>
 
-  
   <div class="bg-image"></div>
   <div class="bg-overlay"></div>
 
@@ -657,6 +721,7 @@
 
     <div class="auth-content" id="authContent">
       
+      <!-- Login View -->
       <div id="loginView">
         <h2 class="auth-header">Welcome Back</h2>
         <p class="auth-subtitle">Sign in to manage content</p>
@@ -664,26 +729,22 @@
         <form onsubmit="handleLogin(event)">
           <div class="form-group">
             <label class="form-label">Email</label>
-            <input type="email" class="form-input" id="loginEmail" placeholder="admin@example.com" required>
+            <input type="email" class="form-input-log" id="loginEmail" placeholder="admin@example.com" required>
           </div>
           <div class="form-group">
             <label class="form-label">Password</label>
-            <input type="password" class="form-input" id="loginPassword" placeholder="••••••••" required>
+            <input type="password" class="form-input-log" id="loginPassword" placeholder="••••••••" required>
           </div>
           <button type="submit" class="form-button">Sign In</button>
           <div class="form-error hidden" id="loginError"></div>
         </form>
 
-        <!-- ADD THIS: Forgot password link -->
         <div class="form-toggle" style="margin-top: 16px;">
           <a onclick="showForgotPasswordView()" style="cursor: pointer; color: rgba(255,255,255,0.7); font-size: 14px;">Forgot password?</a>
         </div>
-
-        <!-- <div class="form-toggle">
-          Need to register an admin? <a onclick="showRegisterView()">Register</a>
-        </div> -->
       </div>
 
+      <!-- Register View -->
       <div id="registerView" class="hidden">
         <h2 class="auth-header">New Admin</h2>
         <p class="auth-subtitle">Create an admin account</p>
@@ -711,9 +772,11 @@
         </form>
       </div>
 
+      <!-- Logged In View -->
       <div id="loggedInView" class="hidden logged-in-view">
         <h2 class="auth-header">Admin Access</h2>
         <p class="auth-subtitle">Logged in as <span class="logged-in-email" id="loggedInEmail"></span></p>
+        <p class="logged-in-email">Make sure to remember your email!</p>
         
         <button class="form-button logout-btn" onclick="handleLogout()">Logout</button>
         
@@ -723,33 +786,100 @@
         </div>
       </div>
 
-      <!-- Forgot Password View -->
+      <!-- STEP 1: Request Reset Code -->
       <div id="forgotPasswordView" class="hidden">
         <h2 class="auth-header">Reset Password</h2>
-        <p class="auth-subtitle">Enter your email to receive reset instructions</p>
+        <p class="auth-subtitle">Enter your email to receive a reset code</p>
         
-        <form onsubmit="handleForgotPassword(event)">
+        <form onsubmit="handleRequestResetCode(event)">
           <div class="form-group">
             <label class="form-label">Email</label>
             <input type="email" class="form-input" id="forgotEmail" placeholder="admin@example.com" required>
           </div>
-          <button type="submit" class="form-button">Send Reset Link</button>
-          <div class="form-success hidden" id="forgotSuccess">
-            Check your email for reset instructions!
-          </div>
+          <button type="submit" class="form-button">Send Reset Code</button>
           <div class="form-error hidden" id="forgotError"></div>
         </form>
+      </div>
 
-        <!-- <div class="form-toggle" style="margin-top: 20px;">
-          <a onclick="showLoginView()" style="cursor: pointer;">Back to Login</a>
-        </div> -->
+      <!-- STEP 2: Show Code (No Email) -->
+      <div id="showCodeView" class="hidden">
+        <h2 class="auth-header">Reset Code Generated</h2>
+        <p class="auth-subtitle">Use this code to reset your password</p>
+        
+        <div class="code-display">
+          <div class="code-display-label">Your Reset Code</div>
+          <div class="code-display-value" id="generatedCode">------</div>
+          <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+        </div>
+        
+        <p class="code-warning">⚠️ This code expires in 15 minutes</p>
+        
+        <button class="form-button" onclick="proceedToVerify()">Enter Code</button>
+        
+        <div class="admin-panel-link" onclick="showAdminCodePanel()">
+          View all active codes (admin only)
+        </div>
+      </div>
+
+      <!-- STEP 3: Verify Code -->
+      <div id="verifyCodeView" class="hidden">
+        <h2 class="auth-header">Enter Code</h2>
+        <p class="auth-subtitle">Enter the 6-digit reset code</p>
+        
+        <div class="code-inputs">
+          <input type="text" class="code-input" maxlength="1" data-index="0">
+          <input type="text" class="code-input" maxlength="1" data-index="1">
+          <input type="text" class="code-input" maxlength="1" data-index="2">
+          <input type="text" class="code-input" maxlength="1" data-index="3">
+          <input type="text" class="code-input" maxlength="1" data-index="4">
+          <input type="text" class="code-input" maxlength="1" data-index="5">
+        </div>
+        
+        <button class="form-button" onclick="verifyCode()">Verify Code</button>
+        
+        <div class="form-error hidden" id="codeError"></div>
+        
+        <div style="margin-top: 16px; text-align: center;">
+          <a onclick="showForgotPasswordView()" style="cursor: pointer; color: rgba(255,255,255,0.6); font-size: 14px;">Request new code</a>
+        </div>
+      </div>
+
+      <!-- STEP 4: New Password -->
+      <div id="newPasswordView" class="hidden">
+        <h2 class="auth-header">New Password</h2>
+        <p class="auth-subtitle">Enter your new password</p>
+        
+        <form onsubmit="handlePasswordReset(event)">
+          <div class="form-group">
+            <label class="form-label">New Password</label>
+            <input type="password" class="form-input" id="newPassword" placeholder="••••••••" required minlength="6">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm Password</label>
+            <input type="password" class="form-input" id="confirmNewPassword" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="form-button">Reset Password</button>
+          <div class="form-error hidden" id="resetError"></div>
+        </form>
+      </div>
+
+      <!-- Admin Code Panel (View all codes) -->
+      <div id="adminCodePanel" class="hidden">
+        <h2 class="auth-header">Active Reset Codes</h2>
+        <p class="auth-subtitle">All unused reset codes</p>
+        
+        <div id="activeCodesList" style="max-height: 300px; overflow-y: auto; margin: 20px 0;">
+          <!-- Codes populated here -->
+        </div>
+        
+        <button class="form-button" onclick="backFromAdminPanel()">Back</button>
       </div>
 
     </div>
   </div>
 
   <script>
-    // Toast Notification Functions
+    // Toast functions
     function showToast(message, type = 'loading') {
       const container = document.getElementById('toastContainer');
       const toast = document.getElementById('toast');
@@ -783,30 +913,7 @@
       setTimeout(hideToast, 3000);
     }
 
-    // AGGRESSIVE FIX: Force page reload when coming from bfcache
-    // This ensures fresh JavaScript state after navigating back
-    (function() {
-      const navType = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
-      
-      // Check if this is a back/forward navigation
-      if (navType && (navType.type === 'back_forward')) {
-        console.log('Back/forward navigation detected, reloading...');
-        window.location.reload();
-        return; // Stop execution
-      }
-      
-      // Fallback for older browsers
-      if (window.history && window.history.state && window.history.state.reloaded) {
-        // Already reloaded once, don't loop
-        return;
-      }
-      
-      // Set flag for next time
-      if (window.history && window.history.replaceState) {
-        window.history.replaceState({reloaded: true}, '');
-      }
-    })();
-
+    // Background animation
     const bg = document.querySelector('.bg-image');
     function animateBackground() {
       const x = Math.random() * 220 - 100;
@@ -818,6 +925,7 @@
     animateBackground();
     setInterval(animateBackground, 3000);
 
+    // Continue button
     document.getElementById('continueBtn').addEventListener('click', () => {
       document.getElementById('card').classList.add('card-exit');
       setTimeout(() => {
@@ -825,6 +933,7 @@
       }, 400);
     });
 
+    // Auth mode functions
     function showAuthMode() {
       const card = document.getElementById('card');
       const mainContent = document.getElementById('mainContent');
@@ -862,24 +971,61 @@
     }
 
     function showLoginView() {
+      hideAllAuthViews();
       document.getElementById('loginView').classList.remove('hidden');
-      document.getElementById('registerView').classList.add('hidden');
-      document.getElementById('loggedInView').classList.add('hidden');
       clearErrors();
     }
 
     function showRegisterView() {
-      document.getElementById('loginView').classList.add('hidden');
+      hideAllAuthViews();
       document.getElementById('registerView').classList.remove('hidden');
-      document.getElementById('loggedInView').classList.add('hidden');
       clearErrors();
     }
 
     function showLoggedInView() {
-      document.getElementById('loginView').classList.add('hidden');
-      document.getElementById('registerView').classList.add('hidden');
+      hideAllAuthViews();
       document.getElementById('loggedInView').classList.remove('hidden');
       document.getElementById('loggedInEmail').textContent = currentUser?.email || '';
+    }
+
+    function showForgotPasswordView() {
+      hideAllAuthViews();
+      document.getElementById('forgotPasswordView').classList.remove('hidden');
+      clearErrors();
+    }
+
+    function showCodeView(code) {
+      hideAllAuthViews();
+      document.getElementById('showCodeView').classList.remove('hidden');
+      document.getElementById('generatedCode').textContent = code;
+      clearErrors();
+    }
+
+    function showVerifyCodeView() {
+      hideAllAuthViews();
+      document.getElementById('verifyCodeView').classList.remove('hidden');
+      clearErrors();
+      
+      setTimeout(() => {
+        document.querySelector('.code-input[data-index="0"]').focus();
+      }, 100);
+    }
+
+    function showNewPasswordView() {
+      hideAllAuthViews();
+      document.getElementById('newPasswordView').classList.remove('hidden');
+      clearErrors();
+    }
+
+    function hideAllAuthViews() {
+      document.getElementById('loginView').classList.add('hidden');
+      document.getElementById('registerView').classList.add('hidden');
+      document.getElementById('loggedInView').classList.add('hidden');
+      document.getElementById('forgotPasswordView').classList.add('hidden');
+      document.getElementById('showCodeView').classList.add('hidden');
+      document.getElementById('verifyCodeView').classList.add('hidden');
+      document.getElementById('newPasswordView').classList.add('hidden');
+      document.getElementById('adminCodePanel').classList.add('hidden');
     }
 
     function showRegisterFromLoggedIn() {
@@ -895,9 +1041,8 @@
     }
 
     function clearErrors() {
-      document.getElementById('loginError').classList.add('hidden');
-      document.getElementById('registerError').classList.add('hidden');
-      document.getElementById('registerSuccess').classList.add('hidden');
+      document.querySelectorAll('.form-error').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.form-success').forEach(el => el.classList.add('hidden'));
     }
 
     function updateUI() {
@@ -907,16 +1052,17 @@
       if (currentUser && isAdmin) {
         loginBtn.classList.remove('hidden');
         badge.classList.add('visible');
-        loginBtn.textContent = 'Admin Panel'; // Change text
-        loginBtn.onclick = showAuthMode; // Go to auth mode (shows logged in view)
+        loginBtn.textContent = 'Admin Panel';
+        loginBtn.onclick = showAuthMode;
       } else {
         loginBtn.classList.remove('hidden');
         badge.classList.remove('visible');
-        loginBtn.textContent = 'Admin Login'; // Reset text
-        loginBtn.onclick = showAuthMode; // Original function
+        loginBtn.textContent = 'Admin Login';
+        loginBtn.onclick = showAuthMode;
       }
     }
 
+    // Auth handlers
     async function handleLogin(e) {
       e.preventDefault();
       const errorDiv = document.getElementById('loginError');
@@ -928,7 +1074,7 @@
         
         showToast('Signing in...', 'loading');
         
-        const result = await signIn(email, password);
+        await signIn(email, password);
         
         showToast('Signed in successfully!', 'success');
         
@@ -939,7 +1085,6 @@
         }, 1200);
         
       } catch (err) {
-        console.error('Login error details:', err);
         hideToast();
         errorDiv.textContent = err.message || 'Unknown error occurred';
         errorDiv.classList.remove('hidden');
@@ -999,36 +1144,388 @@
         }, 1200);
         
       } catch (err) {
-        console.error('Logout error:', err);
         showError('Error logging out');
       }
     }
 
-    window.addEventListener('authStateChanged', () => {
-      updateUI();
-      if (document.getElementById('card').classList.contains('auth-mode')) {
-        updateAuthView();
-      }
-    });
+    // Reset code flow
+    let resetState = {
+      email: null,
+      code: null,
+      codeId: null
+    };
 
-    checkAuth().then(() => {
-      updateUI();
-    });
-
-    function showRegisterFromLoggedIn() {
-      showRegisterView();
+    function generateCode() {
+      return Math.floor(100000 + Math.random() * 900000).toString();
     }
 
-    function handleBackButton() {
-      const forgotView = document.getElementById('forgotPasswordView');
+    async function handleRequestResetCode(e) {
+      e.preventDefault();
+      const email = document.getElementById('forgotEmail').value;
+      const errorDiv = document.getElementById('forgotError');
       
-      // If on forgot password view, go back to login
-      if (!forgotView.classList.contains('hidden')) {
-        showLoginView();
+      errorDiv.classList.add('hidden');
+
+      try {
+        showToast('Verifying email...', 'loading');
+
+        // Check if email exists in admin_profiles
+        const { data: adminData, error: adminError } = await db
+          .from('admin_profiles')
+          .select('id, email')
+          .eq('email', email)
+          .single();
+
+        // Same message whether email exists or not (security)
+        if (adminError || !adminData) {
+          hideToast();
+          errorDiv.innerHTML = 'If this email is registered, a reset code will be shown.<br>Please contact your administrator if you need assistance.';
+          errorDiv.classList.remove('hidden');
+          
+          // Fake delay to prevent timing attacks
+          await new Promise(r => setTimeout(r, 1500));
+          return;
+        }
+
+        // Email exists - generate and show code
+        const code = generateCode();
+        const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+
+        const { data, error } = await db
+          .from('reset_password_with_code')
+          .insert([{
+            email: email,
+            code: code,
+            expires_at: expiresAt,
+            used: false
+          }])
+          .select()
+          .single();
+
+        if (error) {
+          hideToast();
+          errorDiv.textContent = 'System error. Please try again.';
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+
+        hideToast();
+        
+        resetState.email = email;
+        resetState.code = code;
+        resetState.codeId = data.id;
+        
+        showCodeView(code);
+
+      } catch (err) {
+        console.error('Error:', err);
+        hideToast();
+        errorDiv.textContent = 'System error. Please try again.';
+        errorDiv.classList.remove('hidden');
+      }
+    }
+
+    function copyCode() {
+      const code = document.getElementById('generatedCode').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy Code';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    function proceedToVerify() {
+      showVerifyCodeView();
+    }
+
+    // Code input handling
+    document.querySelectorAll('.code-input').forEach((input, index) => {
+      input.addEventListener('input', (e) => {
+        const val = e.target.value;
+        
+        if (!/^\d*$/.test(val)) {
+          e.target.value = '';
+          return;
+        }
+        
+        if (val && index < 5) {
+          document.querySelector(`.code-input[data-index="${index + 1}"]`).focus();
+        }
+        
+        // Auto-submit when all filled
+        if (index === 5 && val) {
+          setTimeout(verifyCode, 100);
+        }
+      });
+      
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !e.target.value && index > 0) {
+          document.querySelector(`.code-input[data-index="${index - 1}"]`).focus();
+        }
+      });
+      
+      input.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const paste = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+        
+        document.querySelectorAll('.code-input').forEach((inp, i) => {
+          inp.value = paste[i] || '';
+        });
+        
+        if (paste.length === 6) {
+          setTimeout(verifyCode, 100);
+        } else if (paste.length > 0) {
+          document.querySelector(`.code-input[data-index="${Math.min(paste.length, 5)}"]`).focus();
+        }
+      });
+    });
+
+    async function verifyCode() {
+      const inputs = document.querySelectorAll('.code-input');
+      const enteredCode = Array.from(inputs).map(i => i.value).join('');
+      const errorDiv = document.getElementById('codeError');
+      
+      if (enteredCode.length !== 6) {
+        errorDiv.textContent = 'Please enter all 6 digits';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        showToast('Verifying...', 'loading');
+
+        const { data, error } = await db
+          .from('reset_password_with_code')
+          .select('*')
+          .eq('email', resetState.email)
+          .eq('code', enteredCode)
+          .eq('used', false)
+          .gt('expires_at', new Date().toISOString())
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (error || !data) {
+          hideToast();
+          errorDiv.textContent = 'Invalid or expired code';
+          errorDiv.classList.remove('hidden');
+          
+          // CLEAR INPUTS ON ERROR
+          inputs.forEach(input => input.value = '');
+          inputs[0].focus(); // Focus first input
+          
+          return;
+        }
+
+        resetState.code = enteredCode;
+        resetState.codeId = data.id;
+        
+        hideToast();
+        showToast('Code verified!', 'success');
+        
+        setTimeout(() => {
+          showNewPasswordView();
+        }, 800);
+
+      } catch (err) {
+        console.error('Error verifying code:', err);
+        hideToast();
+        errorDiv.textContent = 'Error verifying code';
+        errorDiv.classList.remove('hidden');
+        
+        // CLEAR INPUTS ON ERROR
+        inputs.forEach(input => input.value = '');
+        inputs[0].focus();
+      }
+    }
+
+    async function handlePasswordReset(e) {
+      e.preventDefault();
+      const password = document.getElementById('newPassword').value;
+      const confirm = document.getElementById('confirmNewPassword').value;
+      const errorDiv = document.getElementById('resetError');
+      
+      errorDiv.classList.add('hidden');
+
+      if (password !== confirm) {
+        errorDiv.textContent = 'Passwords do not match';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+
+      if (password.length < 6) {
+        errorDiv.textContent = 'Password must be at least 6 characters';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        showToast('Resetting password...', 'loading');
+
+        // Call the RPC function to reset password
+        const { error: rpcError } = await db.rpc('reset_password_with_code', {
+          user_email: resetState.email,
+          new_password: password,
+          verification_code: resetState.code
+        });
+
+        if (rpcError) {
+          console.error('RPC error:', rpcError);
+          hideToast();
+          errorDiv.textContent = 'Password reset failed: ' + rpcError.message;
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+
+        // SUCCESS! Now delete the code from database
+        const { error: deleteError } = await db
+          .from('reset_password_with_code')
+          .delete()
+          .eq('id', resetState.codeId);
+
+        if (deleteError) {
+          console.error('Failed to delete code:', deleteError);
+        }
+
+        // CLEAR INPUT FIELDS
+        document.querySelectorAll('.code-input').forEach(input => {
+          input.value = '';
+        });
+        
+        // Clear password fields too
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmNewPassword').value = '';
+
+        document.querySelectorAll('.form-input').forEach(input => {
+          input.value = '';
+        });
+
+        hideToast();
+        showToast('Password reset successful!', 'success');
+        
+        setTimeout(() => {
+          showLoginView();
+          // Clear state
+          resetState = { email: null, code: null, codeId: null };
+        }, 1500);
+
+      } catch (err) {
+        console.error('Error resetting password:', err);
+        hideToast();
+        errorDiv.textContent = 'Error resetting password';
+        errorDiv.classList.remove('hidden');
+      }
+    }
+
+    // Admin panel to view all codes
+    async function showAdminCodePanel() {
+      if (!currentUser || !isAdmin) {
+        showError('Admin access required');
+        return;
+      }
+
+      hideAllAuthViews();
+      document.getElementById('adminCodePanel').classList.remove('hidden');
+
+      const listDiv = document.getElementById('activeCodesList');
+      listDiv.innerHTML = '<p style="color: rgba(255,255,255,0.6);">Loading...</p>';
+
+      try {
+        const { data, error } = await db
+          .from('reset_password_with_code')
+          .select('*')
+          .eq('used', false)
+          .gt('expires_at', new Date().toISOString())
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          listDiv.innerHTML = `<p style="color: #ff6b6b;">Error: ${error.message}</p>`;
+          return;
+        }
+
+        if (data.length === 0) {
+          listDiv.innerHTML = '<p style="color: rgba(255,255,255,0.6);">No active codes</p>';
+          return;
+        }
+
+        listDiv.innerHTML = data.map(row => `
+          <div style="background: rgba(0,0,0,0.2); border-radius: 8px; padding: 12px; margin-bottom: 8px; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-family: monospace; font-size: 18px; font-weight: bold; color: #fff;">${row.code}</span>
+              <span style="font-size: 12px; color: rgba(255,255,255,0.6);">${new Date(row.expires_at).toLocaleTimeString()}</span>
+            </div>
+            <div style="font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 4px;">${row.email}</div>
+          </div>
+        `).join('');
+
+      } catch (err) {
+        listDiv.innerHTML = `<p style="color: #ff6b6b;">Error loading codes</p>`;
+      }
+    }
+
+    function backFromAdminPanel() {
+      showCodeView(resetState.code);
+    }
+
+    // Back button handler
+    function handleBackButton() {
+      const showCode = document.getElementById('showCodeView');
+      const verifyCode = document.getElementById('verifyCodeView');
+      const newPass = document.getElementById('newPasswordView');
+      const adminPanel = document.getElementById('adminCodePanel');
+      const forpass = document.getElementById('forgotPasswordView');
+      const loglog = document.getElementById('loginView');
+
+      if (!verifyCode.classList.contains('hidden')) {
+        document.querySelectorAll('.code-input').forEach(input => input.value = '');
+      }
+
+      if (!newPass.classList.contains('hidden')) {
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmNewPassword').value = '';
+      }
+
+      if (!newPass.classList.contains('hidden')) {
+        document.querySelectorAll('.code-input').forEach(input => input.value = '');
+      }
+
+      if (!forpass.classList.contains('hidden')) {
+        document.querySelectorAll('.form-input').forEach(input => input.value = '');
+      }
+
+      if (!loglog.classList.contains('hidden')) {
+        document.querySelectorAll('.form-input-log').forEach(input => input.value = '');
+      }
+      
+      if (!adminPanel.classList.contains('hidden')) {
+        showCodeView(resetState.code);
         return;
       }
       
-      // Rest of existing back button logic...
+      if (!newPass.classList.contains('hidden')) {
+        showVerifyCodeView();
+        return;
+      }
+      
+      if (!verifyCode.classList.contains('hidden')) {
+        showCodeView(resetState.code);
+        return;
+      }
+      
+      if (!showCode.classList.contains('hidden')) {
+        showForgotPasswordView();
+        return;
+      }
+      
+      if (!document.getElementById('forgotPasswordView').classList.contains('hidden')) {
+        showLoginView();
+        return;
+      }
+
       const loginView = document.getElementById('loginView');
       const registerView = document.getElementById('registerView');
       const loggedInView = document.getElementById('loggedInView');
@@ -1044,80 +1541,32 @@
       }
     }
 
-    // Create dust particles
+    // Create particles
     function createParticles() {
-        const container = document.getElementById('particles');
-        for (let i = 0; i < 40; i++) {
-            const p = document.createElement('div');
-            p.className = 'particle';
-            p.style.left = (20 + Math.random() * 60) + '%'; // Center area mostly
-            p.style.animationDelay = Math.random() * 20 + 's';
-            p.style.animationDuration = (15 + Math.random() * 10) + 's';
-            container.appendChild(p);
-        }
+      const container = document.getElementById('particles');
+      for (let i = 0; i < 40; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = (20 + Math.random() * 60) + '%';
+        p.style.animationDelay = Math.random() * 20 + 's';
+        p.style.animationDuration = (15 + Math.random() * 10) + 's';
+        container.appendChild(p);
+      }
     }
     createParticles();
 
-    // Show forgot password view
-    function showForgotPasswordView() {
-      document.getElementById('loginView').classList.add('hidden');
-      document.getElementById('registerView').classList.add('hidden');
-      document.getElementById('loggedInView').classList.add('hidden');
-      document.getElementById('forgotPasswordView').classList.remove('hidden');
-      clearErrors();
-    }
-
-    // Handle forgot password
-    async function handleForgotPassword(e) {
-      e.preventDefault();
-      const errorDiv = document.getElementById('forgotError');
-      const successDiv = document.getElementById('forgotSuccess');
-      errorDiv.classList.add('hidden');
-      successDiv.classList.add('hidden');
-
-      const email = document.getElementById('forgotEmail').value;
-
-      try {
-        showToast('Sending reset email...', 'loading');
-        
-        const { error } = await db.auth.resetPasswordForEmail(email, {
-          redirectTo: window.location.origin + '/index.html?reset=success'
-        });
-
-        if (error) throw error;
-
-        hideToast();
-        showToast('Reset email sent!', 'success');
-        successDiv.classList.remove('hidden');
-        
-        // Clear form
-        document.getElementById('forgotEmail').value = '';
-        
-      } catch (err) {
-        hideToast();
-        errorDiv.textContent = err.message;
-        errorDiv.classList.remove('hidden');
-      }
-    }
-
-    // Update showLoginView to hide forgot password
-    function showLoginView() {
-      document.getElementById('loginView').classList.remove('hidden');
-      document.getElementById('registerView').classList.add('hidden');
-      document.getElementById('loggedInView').classList.add('hidden');
-      document.getElementById('forgotPasswordView').classList.add('hidden');
-      clearErrors();
-    }
-
-    // Handle password reset success from email link
-    window.addEventListener('load', () => {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('reset') === 'success') {
-        showToast('Password reset successful! Please log in.', 'success');
-        setTimeout(hideToast, 3000);
+    // Auth state listener
+    window.addEventListener('authStateChanged', () => {
+      updateUI();
+      if (document.getElementById('card').classList.contains('auth-mode')) {
+        updateAuthView();
       }
     });
 
+    // Check auth on load
+    checkAuth().then(() => {
+      updateUI();
+    });
   </script>
 </body>
 </html>
