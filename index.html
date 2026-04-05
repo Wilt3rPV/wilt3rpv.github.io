@@ -487,7 +487,7 @@
     }
 
     /* Toast Notification Styles */
-    .toast-container {
+    /* .toast-container {
       position: fixed;
       top: 20px;
       left: 50%;
@@ -569,7 +569,7 @@
 
     .toast.loading .toast-text {
       animation: pulse 1.5s ease-in-out infinite;
-    }
+    } */
 
     .particles {
       position: absolute;
@@ -779,6 +779,8 @@
         <p class="logged-in-email">Make sure to remember your email!</p>
         
         <button class="form-button logout-btn" onclick="handleLogout()">Logout</button>
+
+        <!-- <button class="form-button" id="continuetoMenu">Continue to menu</button> -->
         
         <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.2);">
           <p class="auth-subtitle" style="margin-bottom: 16px;">Need to add another admin?</p>
@@ -1566,6 +1568,13 @@
     // Check auth on load
     checkAuth().then(() => {
       updateUI();
+    });
+
+    document.getElementById('continuetoMenu').addEventListener('click', () => {
+      document.getElementById('card').classList.add('card-exit');
+      setTimeout(() => {
+        window.location.href = 'menu.html';
+      }, 400);
     });
   </script>
 </body>

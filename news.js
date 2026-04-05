@@ -864,6 +864,10 @@ function goToLogin() {
   window.location.href = 'index.html';
 }
 
+function continuetoMenu() {
+  window.location.href = 'menu.html';
+}
+
 window.addEventListener('pageshow', (event) => {
     if (event.persisted) {
       const modal = document.getElementById('postModal');
@@ -894,16 +898,19 @@ function updateNewsUI(user, admin) {
   const loginBtn = document.getElementById('adminLoginBtn');
   const logoutBtn = document.getElementById('logoutBtn');
   const addCalendarBtn = document.getElementById('addCalendarRowBtn');
+  const registerThisCrap = document.getElementById('registerLoginBtn');
 
   if (user && admin) {
     createBtn.classList.add('visible');
     logoutBtn.classList.add('visible');
     addCalendarBtn.classList.add('visible');
+    registerThisCrap.classList.add('visible');
     loginBtn.classList.add('hidden');
   } else {
     createBtn.classList.remove('visible');
     logoutBtn.classList.remove('visible');
     addCalendarBtn.classList.remove('visible');
+    registerThisCrap.classList.remove('visible');
     loginBtn.classList.remove('hidden');
   }
 }
@@ -949,3 +956,17 @@ document.getElementById('imageOverlay').addEventListener('click', function(e) {
 });
 
 initAuth();
+
+// Logo click handler
+const logo = document.querySelector('.banner-logo');
+if (logo) {
+  logo.style.cursor = 'pointer';
+  logo.addEventListener('click', () => {
+    // Check which page we're on
+    if (window.location.pathname.includes('menu.html')) {
+      window.location.href = 'index.html';
+    } else {
+      window.location.href = 'menu.html';
+    }
+  });
+}
