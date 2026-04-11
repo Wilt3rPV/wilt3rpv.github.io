@@ -192,7 +192,8 @@ p{
 /* =========================
    Home page campus buttons
    ========================= */
-.button-row{
+
+/* .button-row{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
   gap:20px;
@@ -236,14 +237,13 @@ p{
 .college-btn:hover {
   transform: translateY(-7px);
   box-shadow: 0 10px 22px rgba(0,0,0,0.25);
-  background-position: center -45px
 }
 
 .btn:active,
 .college-btn:active {
   transform: translateY(0px);
   box-shadow: 0 6px 14px rgba(0,0,0,0.18);
-}
+} */
 
 .hidden{display:none;}
 .page{padding:20px;}
@@ -304,10 +304,10 @@ p{
   overflow:hidden;
   cursor:pointer;
   position:relative;
-  background-size:cover;
+  background-size:110%;
   background-position:center;
   box-shadow:inset 0 0 150px rgba(0,0,0,.5);
-  transition:background-position .35s ease;
+  transition: background-size 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   
   /* Animation properties */
   opacity: 0;
@@ -338,7 +338,9 @@ p{
   }
 }
 
-.news-card:hover{background-position:center -45px;}
+.news-card:hover{
+  background-size: 100%;
+}
 
 .news-overlay{
   position:absolute;
@@ -357,6 +359,11 @@ p{
   text-shadow:2px 2px 4px #000;
   text-align:center;
   line-height:1.2;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.news-card:hover .news-title {
+  transform: scale(1.07);
 }
 
 /* =========================
@@ -408,7 +415,7 @@ p{
 
 .calendar-rows{display:flex;flex-direction:column;gap:10px;}
 
-.calendar-row {
+/* .calendar-row {
   display: grid;
   grid-template-columns: 110px 1fr 36px;
   gap: 8px;
@@ -422,7 +429,7 @@ p{
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   position: relative;
   z-index: 2;
-}
+} */
 
 .calendar-row input {
   width: 100%;
@@ -444,10 +451,21 @@ p{
 }
 
 /* Readonly inputs - more transparent */
-.calendar-row input[readonly] {
+/* .calendar-row input[readonly] {
   background: rgb(255, 255, 255);
   cursor: default;
   color: #444;
+} */
+
+.calendar-row input[data-field="date"] {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(5px);
+  color: #333;
+  font-size: 14px;
 }
 
 .calendar-row .remove{
@@ -492,6 +510,129 @@ p{
   transform: translateY(0);
   box-shadow: 0 3px 8px rgba(0,0,0,0.12);
   filter: brightness(0.98);
+}
+
+
+/* =========================
+   AUTO-EXPANDING INPUTS (for calendar)
+   ========================= */
+
+/* Wrapper for auto-expanding inputs */
+.grow-wrap {
+  display: grid;
+  position: relative;
+  width: 100%;
+}
+
+/* The hidden pseudo-element that mirrors input content */
+.grow-wrap::after {
+  content: attr(data-replicated-value) " ";
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  visibility: hidden;
+  
+  /* Match input styling EXACTLY */
+  grid-area: 1 / 1 / 2 / 2;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.6);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  min-height: 40px;
+  box-sizing: border-box;
+}
+
+/* The actual input/textarea */
+.grow-wrap input,
+.grow-wrap textarea {
+  grid-area: 1 / 1 / 2 / 2;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(5px);
+  color: #333;
+  font-size: 14px;
+  font-family: inherit;
+  resize: none;
+  overflow: hidden;
+  line-height: 1.4;
+  min-height: 40px;
+  box-sizing: border-box;
+  
+  /* Critical for soft wrapping */
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  
+  /* Modern browser enhancement */
+  field-sizing: content;
+  
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Specific for textarea to remove default styling */
+.grow-wrap textarea {
+  margin: 0;
+}
+
+/* Specific for input to allow text wrapping */
+.grow-wrap input {
+  /* Inputs don't wrap by default, so we need to force it */
+  word-wrap: break-word;
+  text-overflow: clip;
+}
+
+.grow-wrap input:focus,
+.grow-wrap textarea:focus {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.8);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+}
+
+/* Readonly state styling */
+.grow-wrap input[readonly],
+.grow-wrap textarea[readonly] {
+  background: rgb(255, 255, 255);
+  cursor: default;
+}
+
+/* Calendar row adjustments */
+.calendar-row .grow-wrap {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Calendar row layout - updated for auto-expanding inputs */
+.calendar-row {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 36px;
+  gap: 8px;
+  align-items: start;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  position: relative;
+  z-index: 2;
+}
+
+/* Date column specific */
+.calendar-row .grow-wrap:first-child input {
+  font-weight: 500;
+}
+
+.calendar-row .grow-wrap:first-child textarea {
+  font-weight: 700; /* Bold */
 }
 
 /* =========================
@@ -1495,5 +1636,122 @@ body.modal-open {
 
 
 .banner-logo:hover {
-  transform: scale(1.05);
+  animation: bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: scale(1.04);
+}
+
+@keyframes bounce {
+  0% {
+    transform: scale(1.00);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1.04);
+  }
+}
+
+
+
+/* =========================
+   ANIMATED CAMPUS GRADIENT BACKGROUNDS
+   ========================= */
+
+/* Base animated background setup */
+body.animated-campus-bg {
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  background-attachment: fixed;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Campus-specific gradient colors */
+body.campus-prmsuIba {
+  background: linear-gradient(-45deg, #ffbb29, #4f30fc, #ff6b6b, #4facfe, #ffd829, #667eea);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  background-attachment: fixed;
+}
+
+body.campus-prmsuBotolan {
+  background: linear-gradient(-45deg, #aa4646, #942525, #f093fb, #f5576c, #764ba2, #667eea);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  background-attachment: fixed;
+}
+
+body.campus-prmsuCaste {
+  background: linear-gradient(-45deg, #bd2d2d, #6e1b1b, #D2B48C, #f093fb, #f5576c, #4facfe);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  background-attachment: fixed;
+}
+
+body.campus-macsatIba {
+  background: linear-gradient(-45deg, #165f14, #0e3f12, #169c33, #57ff48, #00f2fe, #4facfe);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  background-attachment: fixed;
+}
+
+body.campus-ccGapo {
+  background: linear-gradient(-45deg, #5973c7, #dddb4b, #7797ff, #f2ff7e, #f093fb, #4facfe);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  background-attachment: fixed;
+}
+
+body.campus-ccCruz {
+  background: linear-gradient(-45deg, #4062d1, #c3c5a0, #6580d8, #dcdfc1, #f093fb, #4facfe);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  background-attachment: fixed;
+}
+
+body.campus-prmsuMan {
+  background: linear-gradient(-45deg, #979797, #524a4a, #797979, #555555, #667eea, #764ba2);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  background-attachment: fixed;
+}
+
+body.campus-prmsuCruz {
+  background: linear-gradient(-45deg, #4f30fc, #ffbb29, #667eea, #764ba2, #f093fb, #4facfe);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  background-attachment: fixed;
+}
+
+body.campus-gcGapo {
+  background: linear-gradient(-45deg, #0fac31, #ddce00, #0c530a, #ddce00, #57ff48, #00f2fe);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  background-attachment: fixed;
+}
+
+body.campus-lyceumBotolan {
+  background: linear-gradient(-45deg, #165f14, #0e3f12, #169c33, #57ff48, #00f2fe, #4facfe);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  background-attachment: fixed;
+}
+
+/* Override the static background when animated class is present */
+body.campus-prmsuIba .bg-image,
+body.campus-prmsuBotolan .bg-image,
+body.campus-prmsuCaste .bg-image,
+body.campus-macsatIba .bg-image,
+body.campus-ccGapo .bg-image,
+body.campus-ccCruz .bg-image,
+body.campus-prmsuMan .bg-image,
+body.campus-prmsuCruz .bg-image,
+body.campus-gcGapo .bg-image,
+body.campus-lyceumBotolan .bg-image {
+  display: none;
 }
