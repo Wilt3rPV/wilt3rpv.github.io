@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -7,65 +7,52 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="database.js"></script>
   <style>
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       margin: 0;
       min-height: 100vh;
       display: grid;
       place-items: center;
-      background: #cfcfcf;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      padding: 16px;
       overflow: hidden;
       position: relative;
+      
+      /* Animated gradient background */
+      background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe, #00f2fe);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
     }
 
-    .bg-image, .bg-overlay {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
-    .bg-image {
-      background-image: url("barf.png");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      transform: scale(1.08);
-      z-index: 0;
-      animation: bgDarkenImage 0.5s ease forwards;
-    }
-
-    .bg-overlay {
-      background: rgba(0, 0, 0, 0.35);
-      z-index: 1;
-    }
-
+    /* Glass panel container - SPLIT LAYOUT */
     .card {
       position: relative;
       z-index: 2;
-      width: min(560px, 100%);
-      min-height: min(630px, 92vh);
-      background: color-mix(in srgb, #4b5964 60%, transparent);
+      width: min(1160px, 96%);
+      min-height: min(720px, 90vh);
+      background: color-mix(in srgb, #4b5964 75%, transparent);
       backdrop-filter: blur(20px) saturate(180%);
       -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border-radius: 36px;
+      border-radius: 32px;
       border: 1px solid rgba(255, 255, 255, 0.4);
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 22px;
-      padding: 28px 20px;
-      text-align: center;
+      box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       overflow: hidden;
-      animation: cardIn 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      animation-delay: 0.45s;
+      animation: cardIn 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      animation-delay: 0.3s;
       opacity: 0;
     }
 
+    /* Shine effect */
     .card::before {
       content: '';
       position: absolute;
@@ -73,142 +60,104 @@
       left: 0;
       right: 0;
       height: 50%;
-      background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
+      background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%);
       pointer-events: none;
       z-index: 0;
     }
 
-    .card.auth-mode {
-      gap: 16px;
-      padding: 32px 28px;
+    /* Card exit animation */
+    .card-exit {
+      animation: cardOut 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
     }
 
-    .main-content {
+    @keyframes cardOut {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0.95); }
+    }
+
+    /* Left side - Logo section */
+    .logo-section {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 22px;
-      width: 100%;
-      transition: all 0.3s ease;
+      padding: 75px;
       position: relative;
-      z-index: 2;
-    }
-
-    .main-content.hidden {
-      opacity: 0;
-      transform: translateY(-20px);
-      pointer-events: none;
-      position: absolute;
-    }
-
-    .card.auth-mode .main-content {
-      display: none;
-    }
-
-    .auth-content {
-      display: none;
-      flex-direction: column;
-      width: 100%;
-      max-width: 360px;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-      position: relative;
-      z-index: 2;
-    }
-
-    .card.auth-mode .auth-content {
-      display: flex;
-      opacity: 1;
-      transform: translateY(0);
+      z-index: 1;
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .logo-img {
-      width: min(400px, 100%);
+      width: 100%;
+      max-width: 460px;
       height: auto;
-      display: block;
-      opacity: 0;
-      animation: logoSequence 2.0s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      animation-delay: 0.75s;
-      transition: all 0.3s ease;
       filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
-    }
-
-    .subtitle {
-      margin: 0;
-      color: #fff;
-      font-size: 20px;
-      font-weight: 600;
-      letter-spacing: 0.2px;
       opacity: 0;
-      animation: textIn 2.0s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      animation-delay: 1.9s;
-      transition: all 0.3s ease;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+      animation: logoIn 1s cubic-bezier(0.22, 1, 0.36, 1) forwards, logoFloat 6s ease-in-out infinite;
+      animation-delay: 0.5s, 1.5s;
     }
 
-    .btn-wrap {
+    @keyframes logoIn {
+      0% { opacity: 0; transform: scale(0.95) translateY(20px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .tagline {
+      margin-top: 34px;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 23px;
+      font-weight: 500;
+      text-align: center;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+      animation: fadeInUp 1s ease forwards;
+      animation-delay: 0.8s;
       opacity: 0;
-      animation: buttonIn 0.45s ease forwards;
-      animation-delay: 1.99s;
-      transition: all 0.3s ease;
     }
 
-    .btn {
-      border: 0;
-      cursor: pointer;
-      padding: 20px 64px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(10px) saturate(150%);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      color: #333;
-      font-size: 16px;
-      font-weight: 650;
-      transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease;
-      max-width: 100%;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-      filter: brightness(1.05);
-      background: rgba(255, 255, 255, 0.95);
+    /* Right side - Content section */
+    .content-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 75px;
+      position: relative;
+      z-index: 1;
     }
 
-    .btn:active {
-      transform: translateY(0);
-      box-shadow: 0 6px 14px rgba(0,0,0,0.18);
-      filter: brightness(0.98);
-    }
-
+    /* Admin login button - ORIGINAL SIZE */
     .admin-login-btn {
       position: absolute;
       top: 20px;
       right: 20px;
       padding: 10px 20px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(10px) saturate(150%);
-      border: 2px solid rgba(255, 255, 255, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.4);
       color: #fff;
       font-size: 14px;
       cursor: pointer;
       transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease, background 150ms ease;
-      opacity: 0;
-      animation: buttonIn 0.45s ease forwards;
-      animation-delay: 2.2s;
       text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+      z-index: 10;
     }
 
     .admin-login-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 22px rgba(0,0,0,0.22);
-      filter: brightness(1.05);
-      background: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.25);
       border-color: rgba(255, 255, 255, 0.6);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.22);
     }
 
     .admin-login-btn:active {
@@ -217,33 +166,112 @@
       filter: brightness(0.98);
     }
 
+    /* Main content area */
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 38px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .welcome-text {
+      color: #fff;
+      font-size: 50px;
+      font-weight: 700;
+      text-align: center;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      animation: fadeInUp 1s ease forwards;
+      animation-delay: 0.5s;
+      opacity: 0;
+    }
+
+    .btn-wrap {
+      opacity: 0;
+      animation: buttonIn 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      animation-delay: 0.7s;
+    }
+
+    .continue-btn {
+      border: 0;
+      cursor: pointer;
+      padding: 22px 56px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px) saturate(150%);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      color: #333;
+      font-size: 17px;
+      font-weight: 650;
+      transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease, background 150ms ease;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
+
+    .continue-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      filter: brightness(1.05);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .continue-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+      filter: brightness(0.98);
+    }
+
+    @keyframes buttonIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Auth content (hidden by default) */
+    .auth-content {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      max-width: 420px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .card.auth-mode .main-content {
+      display: none;
+    }
+
+    .card.auth-mode .auth-content {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     .card.auth-mode .admin-login-btn {
       display: none;
     }
 
+    /* Back button - ORIGINAL SIZE */
     .back-btn {
       position: absolute;
       top: 20px;
       left: 20px;
       padding: 10px 20px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(10px) saturate(150%);
-      border: 2px solid rgba(255, 255, 255, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.4);
       color: #fff;
       font-size: 14px;
       cursor: pointer;
       transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease, background 150ms ease;
       display: none;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+      z-index: 10;
     }
 
     .back-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 22px rgba(0,0,0,0.22);
-      filter: brightness(1.05);
-      background: rgba(255, 255, 255, 0.3);
-      border-color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.25);
     }
 
     .back-btn:active {
@@ -256,12 +284,13 @@
       display: block;
     }
 
+    /* Admin badge - ORIGINAL SIZE */
     .admin-badge {
       position: absolute;
       top: 20px;
-      left: 45%;
+      left: 50%;
       transform: translateX(-50%);
-      padding: 8px 16px;
+      padding: 6px 14px;
       border-radius: 999px;
       background: rgba(81, 207, 102, 0.8);
       backdrop-filter: blur(10px) saturate(150%);
@@ -269,23 +298,21 @@
       color: #fff;
       font-size: 12px;
       font-weight: 600;
-      opacity: 0;
-      animation: buttonIn 0.45s ease forwards;
-      animation-delay: 2.2s;
       display: none;
       text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
 
     .admin-badge.visible {
       display: block;
     }
 
+    /* Auth forms styling - ORIGINAL SIZE */
     .auth-header {
       color: #fff;
-      font-size: 28px;
+      font-size: 24px;
       font-weight: 700;
       margin: 0 0 8px 0;
+      text-align: center;
       text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
     }
 
@@ -293,11 +320,11 @@
       color: rgba(255,255,255,0.8);
       font-size: 14px;
       margin-bottom: 24px;
+      text-align: center;
     }
 
     .form-group {
       margin-bottom: 16px;
-      text-align: left;
     }
 
     .form-label {
@@ -306,7 +333,6 @@
       font-size: 14px;
       margin-bottom: 6px;
       font-weight: 500;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
     }
 
     .form-input {
@@ -332,50 +358,25 @@
       color: rgba(255,255,255,0.5);
     }
 
-    .form-input-log {
-      width: 100%;
-      padding: 14px 16px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(5px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: #fff;
-      font-size: 16px;
-      outline: none;
-      transition: all 0.15s ease;
-    }
-
-    .form-input-log:focus {
-      background: rgba(255, 255, 255, 0.25);
-      border-color: rgba(255, 255, 255, 0.6);
-      box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
-    }
-
-    .form-input-log::placeholder {
-      color: rgba(255,255,255,0.5);
-    }
-
+    /* Form buttons - ORIGINAL SIZE */
     .form-button {
       width: 100%;
-      padding: 16px;
+      padding: 14px;
       border-radius: 12px;
       border: 1px solid rgba(255, 255, 255, 0.4);
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(10px) saturate(150%);
+      background: rgba(255, 255, 255, 0.9);
       color: #333;
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
       margin-top: 8px;
       transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease, background 150ms ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
     .form-button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 22px rgba(0,0,0,0.22);
-      filter: brightness(1.05);
       background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.22);
     }
 
     .form-button:active {
@@ -385,24 +386,14 @@
     }
 
     .logout-btn {
-      margin-top: 20px;
+      margin-top: 12px;
       background: rgba(255, 100, 100, 0.8);
       color: #fff;
       border: 1px solid rgba(255, 255, 255, 0.4);
-      transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease, background 150ms ease;
     }
 
     .logout-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 22px rgba(0,0,0,0.22);
-      filter: brightness(1.05);
       background: rgba(255, 80, 80, 0.9);
-    }
-
-    .logout-btn:active {
-      transform: translateY(0);
-      box-shadow: 0 6px 14px rgba(0,0,0,0.18);
-      filter: brightness(0.98);
     }
 
     .form-error {
@@ -410,7 +401,6 @@
       font-size: 14px;
       margin-top: 12px;
       text-align: center;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
     }
 
     .form-success {
@@ -425,69 +415,32 @@
       border: 1px solid rgba(81, 207, 102, 0.4);
     }
 
-    .registered-email {
-      font-weight: 600;
-      color: #fff;
-      display: block;
-      margin-top: 4px;
-    }
-
-    .logged-in-view {
+    .form-toggle {
       text-align: center;
-      color: #fff;
+      margin-top: 16px;
     }
 
-    .logged-in-email {
-      font-weight: 600;
-      color: rgba(255,255,255,0.9);
+    .form-toggle a {
+      color: rgba(255,255,255,0.7);
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: underline;
+      transition: color 0.2s;
+    }
+
+    .form-toggle a:hover {
+      color: #fff;
     }
 
     .hidden { display: none !important; }
 
-    @keyframes textIn {
-      from { opacity: 0; transform: translateY(-45px); }
-      to { opacity: 1; transform: translateY(-70px); }
-    }
-
-    @keyframes buttonIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
     @keyframes cardIn {
-      0% { opacity: 0; transform: scale(0.95); }
-      100% { opacity: 1; transform: scale(1); }
+      0% { opacity: 0; transform: scale(0.95) translateY(20px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
     }
 
-    @keyframes logoSequence {
-      0% { opacity: 0; transform: translateY(0px) scale(0.9); }
-      45% { opacity: 1; transform: translateY(0px) scale(1); }
-      100% { opacity: 1; transform: translateY(-50px) scale(1); }
-    }
-
-    @keyframes bgDarkenImage {
-      from { filter: brightness(1); }
-      to { filter: brightness(0.8); }
-    }
-
-    .card-exit {
-      animation: cardOut 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
-    }
-
-    @keyframes cardOut {
-      0% { opacity: 1; transform: scale(1); }
-      100% { opacity: 0; transform: scale(0.95); }
-    }
-
-    @media (max-width: 420px) {
-      .card { border-radius: 22px; }
-      .card.auth-mode { padding: 24px 20px; }
-      .btn { width: 100%; padding: 32px 48px; font-size: 20px; }
-      .auth-header { font-size: 24px; }
-    }
-
-    /* Toast Notification Styles */
-    /* .toast-container {
+    /* Toast Notification */
+    .toast-container {
       position: fixed;
       top: 20px;
       left: 50%;
@@ -526,108 +479,55 @@
       border: 3px solid rgba(255,255,255,0.3);
       border-top-color: #fff;
       border-radius: 50%;
-      animation: toastSpin 0.8s linear infinite;
-      flex-shrink: 0;
+      animation: spin 0.8s linear infinite;
     }
 
     .toast.success {
       background: color-mix(in srgb, #51cf66 80%, transparent);
     }
 
-    .toast.success .toast-spinner {
-      display: none;
-    }
-
-    .toast.success::before {
-      content: "✓";
-      font-size: 20px;
-      font-weight: bold;
-    }
+    .toast.success .toast-spinner { display: none; }
+    .toast.success::before { content: ":)"; font-size: 20px; font-weight: bold; }
 
     .toast.error {
       background: color-mix(in srgb, #ff6b6b 80%, transparent);
     }
 
-    .toast.error .toast-spinner {
-      display: none;
-    }
+    .toast.error .toast-spinner { display: none; }
+    .toast.error::before { content: ":("; font-size: 18px; font-weight: bold; }
 
-    .toast.error::before {
-      content: "✕";
-      font-size: 18px;
-      font-weight: bold;
-    }
-
-    @keyframes toastSpin {
+    @keyframes spin {
       to { transform: rotate(360deg); }
     }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.7; }
+    /* Responsive */
+    @media (max-width: 768px) {
+      .card {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        min-height: 90vh;
+      }
+
+      .logo-section {
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 40px;
+      }
+
+      .logo-img {
+        max-width: 280px;
+      }
+
+      .content-section {
+        padding: 40px;
+      }
+
+      .welcome-text {
+        font-size: 24px;
+      }
     }
 
-    .toast.loading .toast-text {
-      animation: pulse 1.5s ease-in-out infinite;
-    } */
-
-    .particles {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      z-index: 4;
-      pointer-events: none;
-    }
-
-    .particle {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background: rgba(255, 255, 255, 0.5);
-      border-radius: 50%;
-      animation: drift 20s infinite linear;
-    }
-
-    @keyframes drift {
-      from { transform: translateY(100vh) translateX(0); opacity: 0; }
-      10% { opacity: 0.6; }
-      90% { opacity: 0.6; }
-      to { transform: translateY(-10vh) translateX(30px); opacity: 0; }
-    }
-
-    /* Code input styles */
-    .code-display {
-      background: rgba(0,0,0,0.3);
-      border-radius: 12px;
-      padding: 20px;
-      margin: 20px 0;
-      border: 1px solid rgba(255,255,255,0.2);
-    }
-
-    .code-display-label {
-      color: rgba(255,255,255,0.7);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
-    }
-
-    .code-display-value {
-      color: #fff;
-      font-size: 32px;
-      font-weight: bold;
-      letter-spacing: 8px;
-      font-family: monospace;
-      text-shadow: 0 0 20px rgba(255,255,255,0.5);
-    }
-
-    .code-warning {
-      color: #ff6b6b;
-      font-size: 12px;
-      margin-top: 12px;
-      text-align: center;
-    }
-
+    /* Code input styles for password reset - ORIGINAL SIZE */
     .code-inputs {
       display: flex;
       gap: 8px;
@@ -656,16 +556,30 @@
       outline: none;
     }
 
-    .admin-panel-link {
-      color: rgba(255,255,255,0.6);
-      font-size: 12px;
-      margin-top: 16px;
-      cursor: pointer;
-      text-decoration: underline;
+    .code-display {
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+      border: 1px solid rgba(255,255,255,0.2);
+      text-align: center;
     }
 
-    .admin-panel-link:hover {
+    .code-display-label {
+      color: rgba(255,255,255,0.7);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .code-display-value {
       color: #fff;
+      font-size: 32px;
+      font-weight: bold;
+      letter-spacing: 8px;
+      font-family: monospace;
+      text-shadow: 0 0 20px rgba(255,255,255,0.5);
     }
 
     .copy-btn {
@@ -698,185 +612,181 @@
     </div>
   </div>
 
-  <div class="bg-image"></div>
-  <div class="bg-overlay"></div>
-
-  <div class="particles" id="particles"></div>
-
   <div class="card" id="card">
     <div class="admin-badge" id="adminBadge">ADMIN</div>
     
     <button class="back-btn" id="backBtn" onclick="handleBackButton()">← Back</button>
     <button class="admin-login-btn" id="adminLoginBtn" onclick="showAuthMode()">Admin Login</button>
 
-    <div class="main-content" id="mainContent">
-      <img src="final.png" class="logo-img" id="logoImg">
-      <div class="text-wrap" id="textWrap">
-        <p class="subtitle">The news you need is just a click away~</p>
-      </div>
-      <div class="btn-wrap" id="btnWrap">
-        <button class="btn" id="continueBtn">Continue &gt;</button>
-      </div>
+    <!-- Left Side: Logo -->
+    <div class="logo-section">
+      <img src="unicols.png" class="logo-img" id="logoImg" alt="UNI-COL News">
+      <p class="tagline">The news you need is just a click away~</p>
     </div>
 
-    <div class="auth-content" id="authContent">
+    <!-- Right Side: Content -->
+    <div class="content-section">
       
-      <!-- Login View -->
-      <div id="loginView">
-        <h2 class="auth-header">Welcome Back</h2>
-        <p class="auth-subtitle">Sign in to manage content</p>
-        
-        <form onsubmit="handleLogin(event)">
-          <div class="form-group">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-input-log" id="loginEmail" placeholder="admin@example.com" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Password</label>
-            <input type="password" class="form-input-log" id="loginPassword" placeholder="••••••••" required>
-          </div>
-          <button type="submit" class="form-button">Sign In</button>
-          <div class="form-error hidden" id="loginError"></div>
-        </form>
-
-        <div class="form-toggle" style="margin-top: 16px;">
-          <a onclick="showForgotPasswordView()" style="cursor: pointer; color: rgba(255,255,255,0.7); font-size: 14px;">Forgot password?</a>
+      <!-- Main View -->
+      <div class="main-content" id="mainContent">
+        <h1 class="welcome-text">Welcome to<br>UniCol News</h1>
+        <div class="btn-wrap" id="btnWrap">
+          <button class="continue-btn" id="continueBtn">Continue ></button>
         </div>
       </div>
 
-      <!-- Register View -->
-      <div id="registerView" class="hidden">
-        <h2 class="auth-header">New Admin</h2>
-        <p class="auth-subtitle">Create an admin account</p>
+      <!-- Auth Content -->
+      <div class="auth-content" id="authContent">
         
-        <form onsubmit="handleRegister(event)">
-          <div class="form-group">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-input" id="registerEmail" placeholder="newadmin@example.com" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Password</label>
-            <input type="password" class="form-input" id="registerPassword" placeholder="••••••••" required minlength="6">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Confirm Password</label>
-            <input type="password" class="form-input" id="registerConfirm" placeholder="••••••••" required>
-          </div>
-          <button type="submit" class="form-button">Create Account</button>
-          <div class="form-error hidden" id="registerError"></div>
-          <div class="form-success hidden" id="registerSuccess">
-            Admin created successfully!
-            <span class="registered-email" id="registeredEmail"></span>
-            They can now log in.
-          </div>
-        </form>
-      </div>
+        <!-- Login View -->
+        <div id="loginView">
+          <h2 class="auth-header">Welcome Back</h2>
+          <p class="auth-subtitle">Sign in to manage content</p>
+          
+          <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-input" id="loginEmail" placeholder="admin@example.com" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input type="password" class="form-input" id="loginPassword" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="form-button">Sign In</button>
+            <div class="form-error hidden" id="loginError"></div>
+          </form>
 
-      <!-- Logged In View -->
-      <div id="loggedInView" class="hidden logged-in-view">
-        <h2 class="auth-header">Admin Access</h2>
-        <p class="auth-subtitle">Logged in as <span class="logged-in-email" id="loggedInEmail"></span></p>
-        <p class="logged-in-email">Make sure to remember your email!</p>
-        
-        <button class="form-button logout-btn" onclick="handleLogout()">Logout</button>
-
-        <!-- <button class="form-button" id="continuetoMenu">Continue to menu</button> -->
-        
-        <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.2);">
-          <p class="auth-subtitle" style="margin-bottom: 16px;">Need to add another admin?</p>
-          <button class="form-button" onclick="showRegisterFromLoggedIn()">Register New Admin</button>
+          <div class="form-toggle">
+            <a onclick="showForgotPasswordView()">Forgot password?</a>
+          </div>
         </div>
-      </div>
 
-      <!-- STEP 1: Request Reset Code -->
-      <div id="forgotPasswordView" class="hidden">
-        <h2 class="auth-header">Reset Password</h2>
-        <p class="auth-subtitle">Enter your email to receive a reset code</p>
-        
-        <form onsubmit="handleRequestResetCode(event)">
-          <div class="form-group">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-input" id="forgotEmail" placeholder="admin@example.com" required>
+        <!-- Register View -->
+        <div id="registerView" class="hidden">
+          <h2 class="auth-header">New Admin</h2>
+          <p class="auth-subtitle">Create an admin account</p>
+          
+          <form onsubmit="handleRegister(event)">
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-input" id="registerEmail" placeholder="newadmin@example.com" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input type="password" class="form-input" id="registerPassword" placeholder="••••••••" required minlength="6">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirm Password</label>
+              <input type="password" class="form-input" id="registerConfirm" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="form-button">Create Account</button>
+            <div class="form-error hidden" id="registerError"></div>
+            <div class="form-success hidden" id="registerSuccess">
+              Admin created successfully!
+              <span class="registered-email" id="registeredEmail"></span>
+            </div>
+          </form>
+        </div>
+
+        <!-- Logged In View -->
+        <div id="loggedInView" class="hidden">
+          <h2 class="auth-header">Admin Access</h2>
+          <p class="auth-subtitle">Logged in as <span id="loggedInEmail"></span></p>
+          
+          <button class="form-button logout-btn" onclick="handleLogout()">Logout</button>
+          
+          <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.2);">
+            <p class="auth-subtitle" style="margin-bottom: 16px;">Need to add another admin?</p>
+            <button class="form-button" onclick="showRegisterFromLoggedIn()">Register New Admin</button>
           </div>
-          <button type="submit" class="form-button">Send Reset Code</button>
-          <div class="form-error hidden" id="forgotError"></div>
-        </form>
-      </div>
+        </div>
 
-      <!-- STEP 2: Show Code (No Email) -->
-      <div id="showCodeView" class="hidden">
-        <h2 class="auth-header">Reset Code Generated</h2>
-        <p class="auth-subtitle">Use this code to reset your password</p>
-        
-        <div class="code-display">
-          <div class="code-display-label">Your Reset Code</div>
-          <div class="code-display-value" id="generatedCode">------</div>
-          <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+        <!-- Password Reset Views -->
+        <div id="forgotPasswordView" class="hidden">
+          <h2 class="auth-header">Reset Password</h2>
+          <p class="auth-subtitle">Enter your email to receive a reset code</p>
+          
+          <form onsubmit="handleRequestResetCode(event)">
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-input" id="forgotEmail" placeholder="admin@example.com" required>
+            </div>
+            <button type="submit" class="form-button">Send Reset Code</button>
+            <div class="form-error hidden" id="forgotError"></div>
+          </form>
         </div>
-        
-        <p class="code-warning">⚠️ This code expires in 15 minutes</p>
-        
-        <button class="form-button" onclick="proceedToVerify()">Enter Code</button>
-        
-        <div class="admin-panel-link" onclick="showAdminCodePanel()">
-          View all active codes (admin only)
-        </div>
-      </div>
 
-      <!-- STEP 3: Verify Code -->
-      <div id="verifyCodeView" class="hidden">
-        <h2 class="auth-header">Enter Code</h2>
-        <p class="auth-subtitle">Enter the 6-digit reset code</p>
-        
-        <div class="code-inputs">
-          <input type="text" class="code-input" maxlength="1" data-index="0">
-          <input type="text" class="code-input" maxlength="1" data-index="1">
-          <input type="text" class="code-input" maxlength="1" data-index="2">
-          <input type="text" class="code-input" maxlength="1" data-index="3">
-          <input type="text" class="code-input" maxlength="1" data-index="4">
-          <input type="text" class="code-input" maxlength="1" data-index="5">
-        </div>
-        
-        <button class="form-button" onclick="verifyCode()">Verify Code</button>
-        
-        <div class="form-error hidden" id="codeError"></div>
-        
-        <div style="margin-top: 16px; text-align: center;">
-          <a onclick="showForgotPasswordView()" style="cursor: pointer; color: rgba(255,255,255,0.6); font-size: 14px;">Request new code</a>
-        </div>
-      </div>
-
-      <!-- STEP 4: New Password -->
-      <div id="newPasswordView" class="hidden">
-        <h2 class="auth-header">New Password</h2>
-        <p class="auth-subtitle">Enter your new password</p>
-        
-        <form onsubmit="handlePasswordReset(event)">
-          <div class="form-group">
-            <label class="form-label">New Password</label>
-            <input type="password" class="form-input" id="newPassword" placeholder="••••••••" required minlength="6">
+        <div id="showCodeView" class="hidden">
+          <h2 class="auth-header">Reset Code Generated</h2>
+          <p class="auth-subtitle">Use this code to reset your password</p>
+          
+          <div class="code-display">
+            <div class="code-display-label">Your Reset Code</div>
+            <div class="code-display-value" id="generatedCode">------</div>
+            <button class="copy-btn" onclick="copyCode()">Copy Code</button>
           </div>
-          <div class="form-group">
-            <label class="form-label">Confirm Password</label>
-            <input type="password" class="form-input" id="confirmNewPassword" placeholder="••••••••" required>
+          
+          <p style="color: #ff6b6b; font-size: 12px; text-align: center; margin: 12px 0;">⚠️ This code expires in 15 minutes</p>
+          
+          <button class="form-button" onclick="proceedToVerify()">Enter Code</button>
+          
+          <div class="form-toggle">
+            <a onclick="showAdminCodePanel()">View all active codes (admin only)</a>
           </div>
-          <button type="submit" class="form-button">Reset Password</button>
-          <div class="form-error hidden" id="resetError"></div>
-        </form>
-      </div>
-
-      <!-- Admin Code Panel (View all codes) -->
-      <div id="adminCodePanel" class="hidden">
-        <h2 class="auth-header">Active Reset Codes</h2>
-        <p class="auth-subtitle">All unused reset codes</p>
-        
-        <div id="activeCodesList" style="max-height: 300px; overflow-y: auto; margin: 20px 0;">
-          <!-- Codes populated here -->
         </div>
-        
-        <button class="form-button" onclick="backFromAdminPanel()">Back</button>
-      </div>
 
+        <div id="verifyCodeView" class="hidden">
+          <h2 class="auth-header">Enter Code</h2>
+          <p class="auth-subtitle">Enter the 6-digit reset code</p>
+          
+          <div class="code-inputs">
+            <input type="text" class="code-input" maxlength="1" data-index="0">
+            <input type="text" class="code-input" maxlength="1" data-index="1">
+            <input type="text" class="code-input" maxlength="1" data-index="2">
+            <input type="text" class="code-input" maxlength="1" data-index="3">
+            <input type="text" class="code-input" maxlength="1" data-index="4">
+            <input type="text" class="code-input" maxlength="1" data-index="5">
+          </div>
+          
+          <button class="form-button" onclick="verifyCode()">Verify Code</button>
+          
+          <div class="form-error hidden" id="codeError"></div>
+          
+          <div class="form-toggle">
+            <a onclick="showForgotPasswordView()">Request new code</a>
+          </div>
+        </div>
+
+        <div id="newPasswordView" class="hidden">
+          <h2 class="auth-header">New Password</h2>
+          <p class="auth-subtitle">Enter your new password</p>
+          
+          <form onsubmit="handlePasswordReset(event)">
+            <div class="form-group">
+              <label class="form-label">New Password</label>
+              <input type="password" class="form-input" id="newPassword" placeholder="••••••••" required minlength="6">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirm Password</label>
+              <input type="password" class="form-input" id="confirmNewPassword" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="form-button">Reset Password</button>
+            <div class="form-error hidden" id="resetError"></div>
+          </form>
+        </div>
+
+        <div id="adminCodePanel" class="hidden">
+          <h2 class="auth-header">Active Reset Codes</h2>
+          <p class="auth-subtitle">All unused reset codes</p>
+          
+          <div id="activeCodesList" style="max-height: 300px; overflow-y: auto; margin: 20px 0;">
+            <!-- Codes populated here -->
+          </div>
+          
+          <button class="form-button" onclick="backFromAdminPanel()">Back</button>
+        </div>
+
+      </div>
     </div>
   </div>
 
@@ -915,19 +825,7 @@
       setTimeout(hideToast, 3000);
     }
 
-    // Background animation
-    const bg = document.querySelector('.bg-image');
-    function animateBackground() {
-      const x = Math.random() * 220 - 100;
-      const y = Math.random() * 220 - 100;
-      const scale = 2.0 + Math.random() * 0.3;
-      bg.style.transition = 'transform 3s ease-in-out';
-      bg.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
-    }
-    animateBackground();
-    setInterval(animateBackground, 3000);
-
-    // Continue button
+    // Continue button with card exit animation
     document.getElementById('continueBtn').addEventListener('click', () => {
       document.getElementById('card').classList.add('card-exit');
       setTimeout(() => {
@@ -1171,25 +1069,21 @@
       try {
         showToast('Verifying email...', 'loading');
 
-        // Check if email exists in admin_profiles
         const { data: adminData, error: adminError } = await db
           .from('admin_profiles')
           .select('id, email')
           .eq('email', email)
           .single();
 
-        // Same message whether email exists or not (security)
         if (adminError || !adminData) {
           hideToast();
           errorDiv.innerHTML = 'If this email is registered, a reset code will be shown.<br>Please contact your administrator if you need assistance.';
           errorDiv.classList.remove('hidden');
           
-          // Fake delay to prevent timing attacks
           await new Promise(r => setTimeout(r, 1500));
           return;
         }
 
-        // Email exists - generate and show code
         const code = generateCode();
         const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
 
@@ -1258,7 +1152,6 @@
           document.querySelector(`.code-input[data-index="${index + 1}"]`).focus();
         }
         
-        // Auto-submit when all filled
         if (index === 5 && val) {
           setTimeout(verifyCode, 100);
         }
@@ -1316,9 +1209,8 @@
           errorDiv.textContent = 'Invalid or expired code';
           errorDiv.classList.remove('hidden');
           
-          // CLEAR INPUTS ON ERROR
           inputs.forEach(input => input.value = '');
-          inputs[0].focus(); // Focus first input
+          inputs[0].focus();
           
           return;
         }
@@ -1328,6 +1220,10 @@
         
         hideToast();
         showToast('Code verified!', 'success');
+
+        setTimeout(() => {
+          hideToast();
+        }, 1200);
         
         setTimeout(() => {
           showNewPasswordView();
@@ -1339,7 +1235,6 @@
         errorDiv.textContent = 'Error verifying code';
         errorDiv.classList.remove('hidden');
         
-        // CLEAR INPUTS ON ERROR
         inputs.forEach(input => input.value = '');
         inputs[0].focus();
       }
@@ -1368,7 +1263,6 @@
       try {
         showToast('Resetting password...', 'loading');
 
-        // Call the RPC function to reset password
         const { error: rpcError } = await db.rpc('reset_password_with_code', {
           user_email: resetState.email,
           new_password: password,
@@ -1383,7 +1277,6 @@
           return;
         }
 
-        // SUCCESS! Now delete the code from database
         const { error: deleteError } = await db
           .from('reset_password_with_code')
           .delete()
@@ -1393,12 +1286,10 @@
           console.error('Failed to delete code:', deleteError);
         }
 
-        // CLEAR INPUT FIELDS
         document.querySelectorAll('.code-input').forEach(input => {
           input.value = '';
         });
         
-        // Clear password fields too
         document.getElementById('newPassword').value = '';
         document.getElementById('confirmNewPassword').value = '';
 
@@ -1411,7 +1302,6 @@
         
         setTimeout(() => {
           showLoginView();
-          // Clear state
           resetState = { email: null, code: null, codeId: null };
         }, 1500);
 
@@ -1423,7 +1313,6 @@
       }
     }
 
-    // Admin panel to view all codes
     async function showAdminCodePanel() {
       if (!currentUser || !isAdmin) {
         showError('Admin access required');
@@ -1480,8 +1369,10 @@
       const newPass = document.getElementById('newPasswordView');
       const adminPanel = document.getElementById('adminCodePanel');
       const forpass = document.getElementById('forgotPasswordView');
-      const loglog = document.getElementById('loginView');
+      const loginView = document.getElementById('loginView');
+      const registerView = document.getElementById('registerView');
 
+      // Clear inputs based on current view
       if (!verifyCode.classList.contains('hidden')) {
         document.querySelectorAll('.code-input').forEach(input => input.value = '');
       }
@@ -1489,18 +1380,18 @@
       if (!newPass.classList.contains('hidden')) {
         document.getElementById('newPassword').value = '';
         document.getElementById('confirmNewPassword').value = '';
-      }
-
-      if (!newPass.classList.contains('hidden')) {
         document.querySelectorAll('.code-input').forEach(input => input.value = '');
       }
 
       if (!forpass.classList.contains('hidden')) {
-        document.querySelectorAll('.form-input').forEach(input => input.value = '');
+        document.querySelectorAll('#forgotPasswordView .form-input').forEach(input => input.value = '');
+        // Going back from forgot password should go to login, NOT to code view
+        showLoginView();
+        return;
       }
 
-      if (!loglog.classList.contains('hidden')) {
-        document.querySelectorAll('.form-input-log').forEach(input => input.value = '');
+      if (!loginView.classList.contains('hidden')) {
+        document.querySelectorAll('#loginView .form-input').forEach(input => input.value = '');
       }
       
       if (!adminPanel.classList.contains('hidden')) {
@@ -1519,19 +1410,12 @@
       }
       
       if (!showCode.classList.contains('hidden')) {
+        // Clear the code display when leaving code view
+        document.getElementById('generatedCode').textContent = '------';
         showForgotPasswordView();
         return;
       }
-      
-      if (!document.getElementById('forgotPasswordView').classList.contains('hidden')) {
-        showLoginView();
-        return;
-      }
 
-      const loginView = document.getElementById('loginView');
-      const registerView = document.getElementById('registerView');
-      const loggedInView = document.getElementById('loggedInView');
-      
       if (!registerView.classList.contains('hidden')) {
         if (currentUser && isAdmin) {
           showLoggedInView();
@@ -1542,20 +1426,68 @@
         showMainContent();
       }
     }
+    // function handleBackButton() {
+    //   const showCode = document.getElementById('showCodeView');
+    //   const verifyCode = document.getElementById('verifyCodeView');
+    //   const newPass = document.getElementById('newPasswordView');
+    //   const adminPanel = document.getElementById('adminCodePanel');
+    //   const forpass = document.getElementById('forgotPasswordView');
 
-    // Create particles
-    function createParticles() {
-      const container = document.getElementById('particles');
-      for (let i = 0; i < 40; i++) {
-        const p = document.createElement('div');
-        p.className = 'particle';
-        p.style.left = (20 + Math.random() * 60) + '%';
-        p.style.animationDelay = Math.random() * 20 + 's';
-        p.style.animationDuration = (15 + Math.random() * 10) + 's';
-        container.appendChild(p);
-      }
-    }
-    createParticles();
+    //   if (!verifyCode.classList.contains('hidden')) {
+    //     document.querySelectorAll('.code-input').forEach(input => input.value = '');
+    //   }
+
+    //   if (!newPass.classList.contains('hidden')) {
+    //     document.getElementById('newPassword').value = '';
+    //     document.getElementById('confirmNewPassword').value = '';
+    //   }
+
+    //   if (!forpass.classList.contains('hidden')) {
+    //     document.querySelectorAll('#forgotPasswordView .form-input').forEach(input => input.value = '');
+    //     return;
+    //   }
+
+    //   if (!document.getElementById('loginView').classList.contains('hidden')) {
+    //     document.querySelectorAll('#loginView .form-input').forEach(input => input.value = '');
+    //   }
+      
+    //   if (!adminPanel.classList.contains('hidden')) {
+    //     showCodeView(resetState.code);
+    //     return;
+    //   }
+      
+    //   if (!newPass.classList.contains('hidden')) {
+    //     showVerifyCodeView();
+    //     return;
+    //   }
+      
+    //   if (!verifyCode.classList.contains('hidden')) {
+    //     showCodeView(resetState.code);
+    //     return;
+    //   }
+      
+    //   if (!showCode.classList.contains('hidden')) {
+    //     showForgotPasswordView();
+    //     return;
+    //   }
+      
+    //   if (!forpass.classList.contains('hidden')) {
+    //     showLoginView();
+    //     return;
+    //   }
+
+    //   const registerView = document.getElementById('registerView');
+      
+    //   if (!registerView.classList.contains('hidden')) {
+    //     if (currentUser && isAdmin) {
+    //       showLoggedInView();
+    //     } else {
+    //       showLoginView();
+    //     }
+    //   } else {
+    //     showMainContent();
+    //   }
+    // }
 
     // Auth state listener
     window.addEventListener('authStateChanged', () => {
@@ -1568,13 +1500,6 @@
     // Check auth on load
     checkAuth().then(() => {
       updateUI();
-    });
-
-    document.getElementById('continuetoMenu').addEventListener('click', () => {
-      document.getElementById('card').classList.add('card-exit');
-      setTimeout(() => {
-        window.location.href = 'menu.html';
-      }, 400);
     });
   </script>
 </body>

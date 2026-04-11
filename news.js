@@ -159,6 +159,20 @@ const themes = {
     divider_top: "#4b75fd",
     divider_bottom: "#ffd829"
   },
+  prmsuBotolan: {
+    name: "President Ramon Magsaysay State University - Botolan Campus",
+    bg1: "#aa4646",
+    bg2: "#942525",
+    divider_top: "#961313",
+    divider_bottom: "#942525"
+  },
+  prmsuCaste: {
+    name: "President Ramon Magsaysay State University - Castillejos Campus",
+    bg1: "#bd2d2d",
+    bg2: "#6e1b1b",
+    divider_top: "#D2B48C",
+    divider_bottom: "#D2B48C"
+  },
   macsatIba: {
     name: "Mirco Asia College of Science And Technology - Iba Campus",
     bg1: "#165f14",
@@ -187,19 +201,12 @@ const themes = {
     divider_top: "#797979",
     divider_bottom: "#555555"
   },
-  prmsuBotolan: {
-    name: "President Ramon Magsaysay State University - Botolan Campus",
-    bg1: "#aa4646",
-    bg2: "#942525",
-    divider_top: "#961313",
-    divider_bottom: "#942525"
-  },
-  prmsuCaste: {
-    name: "President Ramon Magsaysay State University - Castillejos Campus",
-    bg1: "#bd2d2d",
-    bg2: "#6e1b1b",
-    divider_top: "#D2B48C",
-    divider_bottom: "#D2B48C"
+  prmsuCruz: {
+    name: "President Ramon Magsaysay State University - Sta. Cruz Campus",
+    bg1: "#ffbb29",
+    bg2: "#4f30fc",
+    divider_top: "#4b75fd",
+    divider_bottom: "#ffd829"
   },
   gcGapo: {
     name: "Gordon College - Olongapo Campus",
@@ -209,7 +216,7 @@ const themes = {
     divider_bottom: "#ddce00"
   },
   lyceumBotolan: {
-    name: "Lyceum Of Western Luzon - Iba Campus",
+    name: "Lyceum Of Western Luzon - Botolan Campus",
     bg1: "#165f14",
     bg2: "#0e3f12",
     divider_top: "#169c33",
@@ -224,6 +231,9 @@ if (theme) {
   document.documentElement.style.setProperty("--bg2", theme.bg2);
   document.documentElement.style.setProperty("--divider_top", theme.divider_top);
   document.documentElement.style.setProperty("--divider_bottom", theme.divider_bottom);
+  
+  // Add campus-specific animated gradient class to body
+  document.body.classList.add(`campus-${selectedCollege}`);
 }
 
 // Show loading spinner immediately on page load
@@ -398,22 +408,37 @@ async function renderCalendar() {
     // Make inputs readonly for non-admins
     const readonlyAttr = !isAdmin ? 'readonly' : '';
     
+    // Escape values for data attributes
+    const escapedDate = escapeHtml(row.date).replace(/"/g, '&quot;');
+    const escapedLabel = escapeHtml(row.label).replace(/"/g, '&quot;');
+    
+    // BOTH date and event use textarea with rows="1" for auto-expansion and wrapping
     div.innerHTML = `
-      <input type="text" value="${escapeHtml(row.date)}" placeholder="Date (e.g. Mar 10)" data-field="date" data-id="${row.id}" ${readonlyAttr}>
-      <input type="text" value="${escapeHtml(row.label)}" placeholder="Event (e.g. Start of classes)" data-field="label" data-id="${row.id}" ${readonlyAttr}>
+      <div class="grow-wrap" data-replicated-value="${escapedDate}">
+        <textarea rows="1" placeholder="Date (e.g. Mar 10)" data-field="date" data-id="${row.id}" ${readonlyAttr} oninput="this.parentNode.dataset.replicatedValue = this.value">${escapeHtml(row.date)}</textarea>
+      </div>
+      <div class="grow-wrap" data-replicated-value="${escapedLabel}">
+        <textarea rows="1" placeholder="Event (e.g. Start of classes)" data-field="label" data-id="${row.id}" ${readonlyAttr} oninput="this.parentNode.dataset.replicatedValue = this.value">${escapeHtml(row.label)}</textarea>
+      </div>
       ${removeButton}
     `;
     calendarRowsEl.appendChild(div);
   });
+  
+  // Trigger input event on all textareas to set initial height after DOM renders
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.calendar-row textarea').forEach(textarea => {
+      textarea.parentNode.dataset.replicatedValue = textarea.value;
+    });
+  });
 }
 
 if (calendarRowsEl) {
-  calendarRowsEl.addEventListener("input", async (e) => {
+    calendarRowsEl.addEventListener("input", async (e) => {
     const id = Number(e.target.dataset.id);
     const field = e.target.dataset.field;
     if (!id || !field) return;
     
-    // Only allow editing if admin
     if (!isAdmin) {
       e.preventDefault();
       return;
@@ -423,6 +448,7 @@ if (calendarRowsEl) {
     const row = rows.find(r => r.id === id);
     if (!row) return;
 
+    // Handle both input and textarea
     row[field] = e.target.value;
     await saveCalendarRow(row);
   });
@@ -956,17 +982,3 @@ document.getElementById('imageOverlay').addEventListener('click', function(e) {
 });
 
 initAuth();
-
-// Logo click handler
-const logo = document.querySelector('.banner-logo');
-if (logo) {
-  logo.style.cursor = 'pointer';
-  logo.addEventListener('click', () => {
-    // Check which page we're on
-    if (window.location.pathname.includes('menu.html')) {
-      window.location.href = 'index.html';
-    } else {
-      window.location.href = 'menu.html';
-    }
-  });
-}
