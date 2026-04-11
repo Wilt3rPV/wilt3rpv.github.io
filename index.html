@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to UniCol!</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="database.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      overflow: hidden;
+      position: relative;
+      
+      /* Animated gradient background */
+      background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe, #00f2fe);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Glass panel container - SPLIT LAYOUT */
+    .card {
+      position: relative;
+      z-index: 2;
+      width: min(1160px, 96%);
+      min-height: min(720px, 90vh);
+      background: color-mix(in srgb, #4b5964 75%, transparent);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-radius: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+      animation: cardIn 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      animation-delay: 0.3s;
+      opacity: 0;
+    }
+
+    /* Shine effect */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Card exit animation */
+    .card-exit {
+      animation: cardOut 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+    }
+
+    @keyframes cardOut {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0.95); }
+    }
+
+    /* Left side - Logo section */
+    .logo-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 75px;
+      position: relative;
+      z-index: 1;
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .logo-img {
+      width: 100%;
+      max-width: 460px;
+      height: auto;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+      opacity: 0;
+      animation: logoIn 1s cubic-bezier(0.22, 1, 0.36, 1) forwards, logoFloat 6s ease-in-out infinite;
+      animation-delay: 0.5s, 1.5s;
+    }
+
+    @keyframes logoIn {
+      0% { opacity: 0; transform: scale(0.95) translateY(20px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .tagline {
+      margin-top: 34px;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 23px;
+      font-weight: 500;
+      text-align: center;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+      animation: fadeInUp 1s ease forwards;
+      animation-delay: 0.8s;
+      opacity: 0;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Right side - Content section */
+    .content-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 75px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Admin login button - ORIGINAL SIZE */
+    .admin-login-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px) saturate(150%);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease, background 150ms ease;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+
+    .admin-login-btn:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.6);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.22);
+    }
+
+    .admin-login-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+      filter: brightness(0.98);
+    }
+
+    /* Main content area */
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 38px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .welcome-text {
+      color: #fff;
+      font-size: 50px;
+      font-weight: 700;
+      text-align: center;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      animation: fadeInUp 1s ease forwards;
+      animation-delay: 0.5s;
+      opacity: 0;
+    }
+
+    .btn-wrap {
+      opacity: 0;
+      animation: buttonIn 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      animation-delay: 0.7s;
+    }
+
+    .continue-btn {
+      border: 0;
+      cursor: pointer;
+      padding: 22px 56px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px) saturate(150%);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      color: #333;
+      font-size: 17px;
+      font-weight: 650;
+      transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease, background 150ms ease;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
+
+    .continue-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      filter: brightness(1.05);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .continue-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+      filter: brightness(0.98);
+    }
+
+    @keyframes buttonIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Auth content (hidden by default) */
+    .auth-content {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      max-width: 420px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .card.auth-mode .main-content {
+      display: none;
+    }
+
+    .card.auth-mode .auth-content {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .card.auth-mode .admin-login-btn {
+      display: none;
+    }
+
+    /* Back button - ORIGINAL SIZE */
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 10px 20px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px) saturate(150%);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease, background 150ms ease;
+      display: none;
+      z-index: 10;
+    }
+
+    .back-btn:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .back-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+      filter: brightness(0.98);
+    }
+
+    .card.auth-mode .back-btn {
+      display: block;
+    }
+
+    /* Admin badge - ORIGINAL SIZE */
+    .admin-badge {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(81, 207, 102, 0.8);
+      backdrop-filter: blur(10px) saturate(150%);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      display: none;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    }
+
+    .admin-badge.visible {
+      display: block;
+    }
+
+    /* Auth forms styling - ORIGINAL SIZE */
+    .auth-header {
+      color: #fff;
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+      text-align: center;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+    }
+
+    .auth-subtitle {
+      color: rgba(255,255,255,0.8);
+      font-size: 14px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      color: rgba(255,255,255,0.9);
+      font-size: 14px;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.15s ease;
+    }
+
+    .form-input:focus {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.6);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
+    }
+
+    .form-input::placeholder {
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* Form buttons - ORIGINAL SIZE */
+    .form-button {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease, background 150ms ease;
+    }
+
+    .form-button:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.22);
+    }
+
+    .form-button:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+      filter: brightness(0.98);
+    }
+
+    .logout-btn {
+      margin-top: 12px;
+      background: rgba(255, 100, 100, 0.8);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    .logout-btn:hover {
+      background: rgba(255, 80, 80, 0.9);
+    }
+
+    .form-error {
+      color: #ff6b6b;
+      font-size: 14px;
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    .form-success {
+      color: #51cf66;
+      font-size: 14px;
+      margin-top: 12px;
+      text-align: center;
+      padding: 12px;
+      background: rgba(81, 207, 102, 0.15);
+      backdrop-filter: blur(5px);
+      border-radius: 8px;
+      border: 1px solid rgba(81, 207, 102, 0.4);
+    }
+
+    .form-toggle {
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    .form-toggle a {
+      color: rgba(255,255,255,0.7);
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: underline;
+      transition: color 0.2s;
+    }
+
+    .form-toggle a:hover {
+      color: #fff;
+    }
+
+    .hidden { display: none !important; }
+
+    @keyframes cardIn {
+      0% { opacity: 0; transform: scale(0.95) translateY(20px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      z-index: 100003;
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+    }
+
+    .toast-container.visible {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast {
+      background: color-mix(in srgb, #4b5964 80%, transparent);
+      backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: #fff;
+      padding: 16px 28px;
+      border-radius: 50px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      min-width: 220px;
+      justify-content: center;
+    }
+
+    .toast-spinner {
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .toast.success {
+      background: color-mix(in srgb, #51cf66 80%, transparent);
+    }
+
+    .toast.success .toast-spinner { display: none; }
+    .toast.success::before { content: ":)"; font-size: 20px; font-weight: bold; }
+
+    .toast.error {
+      background: color-mix(in srgb, #ff6b6b 80%, transparent);
+    }
+
+    .toast.error .toast-spinner { display: none; }
+    .toast.error::before { content: ":("; font-size: 18px; font-weight: bold; }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .card {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        min-height: 90vh;
+      }
+
+      .logo-section {
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 40px;
+      }
+
+      .logo-img {
+        max-width: 280px;
+      }
+
+      .content-section {
+        padding: 40px;
+      }
+
+      .welcome-text {
+        font-size: 24px;
+      }
+    }
+
+    /* Code input styles for password reset - ORIGINAL SIZE */
+    .code-inputs {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .code-input {
+      width: 45px;
+      height: 55px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      backdrop-filter: blur(5px);
+      transition: all 0.2s ease;
+    }
+
+    .code-input:focus {
+      background: rgba(255,255,255,0.25);
+      border-color: rgba(255,255,255,0.6);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
+      outline: none;
+    }
+
+    .code-display {
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+      border: 1px solid rgba(255,255,255,0.2);
+      text-align: center;
+    }
+
+    .code-display-label {
+      color: rgba(255,255,255,0.7);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .code-display-value {
+      color: #fff;
+      font-size: 32px;
+      font-weight: bold;
+      letter-spacing: 8px;
+      font-family: monospace;
+      text-shadow: 0 0 20px rgba(255,255,255,0.5);
+    }
+
+    .copy-btn {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .copy-btn.copied {
+      background: rgba(81, 207, 102, 0.6);
+    }
+  </style>
+</head>
+<body>
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container">
+    <div id="toast" class="toast">
+      <div class="toast-spinner"></div>
+      <span class="toast-text" id="toastText">Loading...</span>
+    </div>
+  </div>
+
+  <div class="card" id="card">
+    <div class="admin-badge" id="adminBadge">ADMIN</div>
+    
+    <button class="back-btn" id="backBtn" onclick="handleBackButton()">← Back</button>
+    <button class="admin-login-btn" id="adminLoginBtn" onclick="showAuthMode()">Admin Login</button>
+
+    <!-- Left Side: Logo -->
+    <div class="logo-section">
+      <img src="unicols.png" class="logo-img" id="logoImg" alt="UNI-COL News">
+      <p class="tagline">The news you need is just a click away~</p>
+    </div>
+
+    <!-- Right Side: Content -->
+    <div class="content-section">
+      
+      <!-- Main View -->
+      <div class="main-content" id="mainContent">
+        <h1 class="welcome-text">Welcome to<br>UniCol News</h1>
+        <div class="btn-wrap" id="btnWrap">
+          <button class="continue-btn" id="continueBtn">Continue ></button>
+        </div>
+      </div>
+
+      <!-- Auth Content -->
+      <div class="auth-content" id="authContent">
+        
+        <!-- Login View -->
+        <div id="loginView">
+          <h2 class="auth-header">Welcome Back</h2>
+          <p class="auth-subtitle">Sign in to manage content</p>
+          
+          <form onsubmit="handleLogin(event)">
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-input" id="loginEmail" placeholder="admin@example.com" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input type="password" class="form-input" id="loginPassword" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="form-button">Sign In</button>
+            <div class="form-error hidden" id="loginError"></div>
+          </form>
+
+          <div class="form-toggle">
+            <a onclick="showForgotPasswordView()">Forgot password?</a>
+          </div>
+        </div>
+
+        <!-- Register View -->
+        <div id="registerView" class="hidden">
+          <h2 class="auth-header">New Admin</h2>
+          <p class="auth-subtitle">Create an admin account</p>
+          
+          <form onsubmit="handleRegister(event)">
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-input" id="registerEmail" placeholder="newadmin@example.com" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input type="password" class="form-input" id="registerPassword" placeholder="••••••••" required minlength="6">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirm Password</label>
+              <input type="password" class="form-input" id="registerConfirm" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="form-button">Create Account</button>
+            <div class="form-error hidden" id="registerError"></div>
+            <div class="form-success hidden" id="registerSuccess">
+              Admin created successfully!
+              <span class="registered-email" id="registeredEmail"></span>
+            </div>
+          </form>
+        </div>
+
+        <!-- Logged In View -->
+        <div id="loggedInView" class="hidden">
+          <h2 class="auth-header">Admin Access</h2>
+          <p class="auth-subtitle">Logged in as <span id="loggedInEmail"></span></p>
+          
+          <button class="form-button logout-btn" onclick="handleLogout()">Logout</button>
+          
+          <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.2);">
+            <p class="auth-subtitle" style="margin-bottom: 16px;">Need to add another admin?</p>
+            <button class="form-button" onclick="showRegisterFromLoggedIn()">Register New Admin</button>
+          </div>
+        </div>
+
+        <!-- Password Reset Views -->
+        <div id="forgotPasswordView" class="hidden">
+          <h2 class="auth-header">Reset Password</h2>
+          <p class="auth-subtitle">Enter your email to receive a reset code</p>
+          
+          <form onsubmit="handleRequestResetCode(event)">
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-input" id="forgotEmail" placeholder="admin@example.com" required>
+            </div>
+            <button type="submit" class="form-button">Send Reset Code</button>
+            <div class="form-error hidden" id="forgotError"></div>
+          </form>
+        </div>
+
+        <div id="showCodeView" class="hidden">
+          <h2 class="auth-header">Reset Code Generated</h2>
+          <p class="auth-subtitle">Use this code to reset your password</p>
+          
+          <div class="code-display">
+            <div class="code-display-label">Your Reset Code</div>
+            <div class="code-display-value" id="generatedCode">------</div>
+            <button class="copy-btn" onclick="copyCode()">Copy Code</button>
+          </div>
+          
+          <p style="color: #ff6b6b; font-size: 12px; text-align: center; margin: 12px 0;">⚠️ This code expires in 15 minutes</p>
+          
+          <button class="form-button" onclick="proceedToVerify()">Enter Code</button>
+          
+          <div class="form-toggle">
+            <a onclick="showAdminCodePanel()">View all active codes (admin only)</a>
+          </div>
+        </div>
+
+        <div id="verifyCodeView" class="hidden">
+          <h2 class="auth-header">Enter Code</h2>
+          <p class="auth-subtitle">Enter the 6-digit reset code</p>
+          
+          <div class="code-inputs">
+            <input type="text" class="code-input" maxlength="1" data-index="0">
+            <input type="text" class="code-input" maxlength="1" data-index="1">
+            <input type="text" class="code-input" maxlength="1" data-index="2">
+            <input type="text" class="code-input" maxlength="1" data-index="3">
+            <input type="text" class="code-input" maxlength="1" data-index="4">
+            <input type="text" class="code-input" maxlength="1" data-index="5">
+          </div>
+          
+          <button class="form-button" onclick="verifyCode()">Verify Code</button>
+          
+          <div class="form-error hidden" id="codeError"></div>
+          
+          <div class="form-toggle">
+            <a onclick="showForgotPasswordView()">Request new code</a>
+          </div>
+        </div>
+
+        <div id="newPasswordView" class="hidden">
+          <h2 class="auth-header">New Password</h2>
+          <p class="auth-subtitle">Enter your new password</p>
+          
+          <form onsubmit="handlePasswordReset(event)">
+            <div class="form-group">
+              <label class="form-label">New Password</label>
+              <input type="password" class="form-input" id="newPassword" placeholder="••••••••" required minlength="6">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirm Password</label>
+              <input type="password" class="form-input" id="confirmNewPassword" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="form-button">Reset Password</button>
+            <div class="form-error hidden" id="resetError"></div>
+          </form>
+        </div>
+
+        <div id="adminCodePanel" class="hidden">
+          <h2 class="auth-header">Active Reset Codes</h2>
+          <p class="auth-subtitle">All unused reset codes</p>
+          
+          <div id="activeCodesList" style="max-height: 300px; overflow-y: auto; margin: 20px 0;">
+            <!-- Codes populated here -->
+          </div>
+          
+          <button class="form-button" onclick="backFromAdminPanel()">Back</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Toast functions
+    function showToast(message, type = 'loading') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.getElementById('toast');
+      const text = document.getElementById('toastText');
+      
+      text.textContent = message;
+      
+      toast.className = 'toast';
+      container.classList.remove('visible');
+      
+      if (type === 'loading') {
+        toast.classList.add('loading');
+      } else if (type === 'success') {
+        toast.classList.add('success');
+      } else if (type === 'error') {
+        toast.classList.add('error');
+      }
+      
+      requestAnimationFrame(() => {
+        container.classList.add('visible');
+      });
+    }
+
+    function hideToast() {
+      const container = document.getElementById('toastContainer');
+      container.classList.remove('visible');
+    }
+
+    function showError(message) {
+      showToast(message, 'error');
+      setTimeout(hideToast, 3000);
+    }
+
+    // Continue button with card exit animation
+    document.getElementById('continueBtn').addEventListener('click', () => {
+      document.getElementById('card').classList.add('card-exit');
+      setTimeout(() => {
+        window.location.href = 'menu.html';
+      }, 400);
+    });
+
+    // Auth mode functions
+    function showAuthMode() {
+      const card = document.getElementById('card');
+      const mainContent = document.getElementById('mainContent');
+      const authContent = document.getElementById('authContent');
+      
+      authContent.style.opacity = '';
+      authContent.style.transform = '';
+      
+      mainContent.style.opacity = '0';
+      mainContent.style.transform = 'translateY(-20px)';
+      
+      setTimeout(() => {
+        card.classList.add('auth-mode');
+        updateAuthView();
+      }, 300);
+    }
+
+    function showMainContent() {
+      const card = document.getElementById('card');
+      const mainContent = document.getElementById('mainContent');
+      const authContent = document.getElementById('authContent');
+      
+      mainContent.style.opacity = '';
+      mainContent.style.transform = '';
+      
+      authContent.style.opacity = '0';
+      authContent.style.transform = 'translateY(20px)';
+      
+      card.classList.remove('auth-mode');
+      
+      setTimeout(() => {
+        mainContent.style.opacity = '1';
+        mainContent.style.transform = 'translateY(0)';
+      }, 100);
+    }
+
+    function showLoginView() {
+      hideAllAuthViews();
+      document.getElementById('loginView').classList.remove('hidden');
+      clearErrors();
+    }
+
+    function showRegisterView() {
+      hideAllAuthViews();
+      document.getElementById('registerView').classList.remove('hidden');
+      clearErrors();
+    }
+
+    function showLoggedInView() {
+      hideAllAuthViews();
+      document.getElementById('loggedInView').classList.remove('hidden');
+      document.getElementById('loggedInEmail').textContent = currentUser?.email || '';
+    }
+
+    function showForgotPasswordView() {
+      hideAllAuthViews();
+      document.getElementById('forgotPasswordView').classList.remove('hidden');
+      clearErrors();
+    }
+
+    function showCodeView(code) {
+      hideAllAuthViews();
+      document.getElementById('showCodeView').classList.remove('hidden');
+      document.getElementById('generatedCode').textContent = code;
+      clearErrors();
+    }
+
+    function showVerifyCodeView() {
+      hideAllAuthViews();
+      document.getElementById('verifyCodeView').classList.remove('hidden');
+      clearErrors();
+      
+      setTimeout(() => {
+        document.querySelector('.code-input[data-index="0"]').focus();
+      }, 100);
+    }
+
+    function showNewPasswordView() {
+      hideAllAuthViews();
+      document.getElementById('newPasswordView').classList.remove('hidden');
+      clearErrors();
+    }
+
+    function hideAllAuthViews() {
+      document.getElementById('loginView').classList.add('hidden');
+      document.getElementById('registerView').classList.add('hidden');
+      document.getElementById('loggedInView').classList.add('hidden');
+      document.getElementById('forgotPasswordView').classList.add('hidden');
+      document.getElementById('showCodeView').classList.add('hidden');
+      document.getElementById('verifyCodeView').classList.add('hidden');
+      document.getElementById('newPasswordView').classList.add('hidden');
+      document.getElementById('adminCodePanel').classList.add('hidden');
+    }
+
+    function showRegisterFromLoggedIn() {
+      showRegisterView();
+    }
+
+    function updateAuthView() {
+      if (currentUser && isAdmin) {
+        showLoggedInView();
+      } else {
+        showLoginView();
+      }
+    }
+
+    function clearErrors() {
+      document.querySelectorAll('.form-error').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.form-success').forEach(el => el.classList.add('hidden'));
+    }
+
+    function updateUI() {
+      const loginBtn = document.getElementById('adminLoginBtn');
+      const badge = document.getElementById('adminBadge');
+      
+      if (currentUser && isAdmin) {
+        loginBtn.classList.remove('hidden');
+        badge.classList.add('visible');
+        loginBtn.textContent = 'Admin Panel';
+        loginBtn.onclick = showAuthMode;
+      } else {
+        loginBtn.classList.remove('hidden');
+        badge.classList.remove('visible');
+        loginBtn.textContent = 'Admin Login';
+        loginBtn.onclick = showAuthMode;
+      }
+    }
+
+    // Auth handlers
+    async function handleLogin(e) {
+      e.preventDefault();
+      const errorDiv = document.getElementById('loginError');
+      errorDiv.classList.add('hidden');
+
+      try {
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        
+        showToast('Signing in...', 'loading');
+        
+        await signIn(email, password);
+        
+        showToast('Signed in successfully!', 'success');
+        
+        setTimeout(() => {
+          hideToast();
+          updateUI();
+          updateAuthView();
+        }, 1200);
+        
+      } catch (err) {
+        hideToast();
+        errorDiv.textContent = err.message || 'Unknown error occurred';
+        errorDiv.classList.remove('hidden');
+      }
+    }
+
+    async function handleRegister(e) {
+      e.preventDefault();
+      const errorDiv = document.getElementById('registerError');
+      const successDiv = document.getElementById('registerSuccess');
+      const emailSpan = document.getElementById('registeredEmail');
+      errorDiv.classList.add('hidden');
+      successDiv.classList.add('hidden');
+
+      const email = document.getElementById('registerEmail').value;
+      const password = document.getElementById('registerPassword').value;
+      const confirm = document.getElementById('registerConfirm').value;
+
+      if (password !== confirm) {
+        errorDiv.textContent = 'Passwords do not match';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        showToast('Creating admin account...', 'loading');
+        
+        await signUp(email, password);
+        
+        hideToast();
+        showToast('Admin created successfully!', 'success');
+        
+        emailSpan.textContent = email;
+        successDiv.classList.remove('hidden');
+        document.getElementById('registerView').querySelector('form').reset();
+        
+        setTimeout(hideToast, 2000);
+        
+      } catch (err) {
+        hideToast();
+        errorDiv.textContent = err.message;
+        errorDiv.classList.remove('hidden');
+      }
+    }
+
+    async function handleLogout() {
+      showToast('Logging out...', 'loading');
+      
+      try {
+        await signOut();
+        showToast('Logged out successfully!', 'success');
+        
+        setTimeout(() => {
+          hideToast();
+          showLoginView();
+          updateUI();
+        }, 1200);
+        
+      } catch (err) {
+        showError('Error logging out');
+      }
+    }
+
+    // Reset code flow
+    let resetState = {
+      email: null,
+      code: null,
+      codeId: null
+    };
+
+    function generateCode() {
+      return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+
+    async function handleRequestResetCode(e) {
+      e.preventDefault();
+      const email = document.getElementById('forgotEmail').value;
+      const errorDiv = document.getElementById('forgotError');
+      
+      errorDiv.classList.add('hidden');
+
+      try {
+        showToast('Verifying email...', 'loading');
+
+        const { data: adminData, error: adminError } = await db
+          .from('admin_profiles')
+          .select('id, email')
+          .eq('email', email)
+          .single();
+
+        if (adminError || !adminData) {
+          hideToast();
+          errorDiv.innerHTML = 'If this email is registered, a reset code will be shown.<br>Please contact your administrator if you need assistance.';
+          errorDiv.classList.remove('hidden');
+          
+          await new Promise(r => setTimeout(r, 1500));
+          return;
+        }
+
+        const code = generateCode();
+        const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+
+        const { data, error } = await db
+          .from('reset_password_with_code')
+          .insert([{
+            email: email,
+            code: code,
+            expires_at: expiresAt,
+            used: false
+          }])
+          .select()
+          .single();
+
+        if (error) {
+          hideToast();
+          errorDiv.textContent = 'System error. Please try again.';
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+
+        hideToast();
+        
+        resetState.email = email;
+        resetState.code = code;
+        resetState.codeId = data.id;
+        
+        showCodeView(code);
+
+      } catch (err) {
+        console.error('Error:', err);
+        hideToast();
+        errorDiv.textContent = 'System error. Please try again.';
+        errorDiv.classList.remove('hidden');
+      }
+    }
+
+    function copyCode() {
+      const code = document.getElementById('generatedCode').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy Code';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    function proceedToVerify() {
+      showVerifyCodeView();
+    }
+
+    // Code input handling
+    document.querySelectorAll('.code-input').forEach((input, index) => {
+      input.addEventListener('input', (e) => {
+        const val = e.target.value;
+        
+        if (!/^\d*$/.test(val)) {
+          e.target.value = '';
+          return;
+        }
+        
+        if (val && index < 5) {
+          document.querySelector(`.code-input[data-index="${index + 1}"]`).focus();
+        }
+        
+        if (index === 5 && val) {
+          setTimeout(verifyCode, 100);
+        }
+      });
+      
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !e.target.value && index > 0) {
+          document.querySelector(`.code-input[data-index="${index - 1}"]`).focus();
+        }
+      });
+      
+      input.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const paste = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+        
+        document.querySelectorAll('.code-input').forEach((inp, i) => {
+          inp.value = paste[i] || '';
+        });
+        
+        if (paste.length === 6) {
+          setTimeout(verifyCode, 100);
+        } else if (paste.length > 0) {
+          document.querySelector(`.code-input[data-index="${Math.min(paste.length, 5)}"]`).focus();
+        }
+      });
+    });
+
+    async function verifyCode() {
+      const inputs = document.querySelectorAll('.code-input');
+      const enteredCode = Array.from(inputs).map(i => i.value).join('');
+      const errorDiv = document.getElementById('codeError');
+      
+      if (enteredCode.length !== 6) {
+        errorDiv.textContent = 'Please enter all 6 digits';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        showToast('Verifying...', 'loading');
+
+        const { data, error } = await db
+          .from('reset_password_with_code')
+          .select('*')
+          .eq('email', resetState.email)
+          .eq('code', enteredCode)
+          .eq('used', false)
+          .gt('expires_at', new Date().toISOString())
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (error || !data) {
+          hideToast();
+          errorDiv.textContent = 'Invalid or expired code';
+          errorDiv.classList.remove('hidden');
+          
+          inputs.forEach(input => input.value = '');
+          inputs[0].focus();
+          
+          return;
+        }
+
+        resetState.code = enteredCode;
+        resetState.codeId = data.id;
+        
+        hideToast();
+        showToast('Code verified!', 'success');
+
+        setTimeout(() => {
+          hideToast();
+        }, 1200);
+        
+        setTimeout(() => {
+          showNewPasswordView();
+        }, 800);
+
+      } catch (err) {
+        console.error('Error verifying code:', err);
+        hideToast();
+        errorDiv.textContent = 'Error verifying code';
+        errorDiv.classList.remove('hidden');
+        
+        inputs.forEach(input => input.value = '');
+        inputs[0].focus();
+      }
+    }
+
+    async function handlePasswordReset(e) {
+      e.preventDefault();
+      const password = document.getElementById('newPassword').value;
+      const confirm = document.getElementById('confirmNewPassword').value;
+      const errorDiv = document.getElementById('resetError');
+      
+      errorDiv.classList.add('hidden');
+
+      if (password !== confirm) {
+        errorDiv.textContent = 'Passwords do not match';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+
+      if (password.length < 6) {
+        errorDiv.textContent = 'Password must be at least 6 characters';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        showToast('Resetting password...', 'loading');
+
+        const { error: rpcError } = await db.rpc('reset_password_with_code', {
+          user_email: resetState.email,
+          new_password: password,
+          verification_code: resetState.code
+        });
+
+        if (rpcError) {
+          console.error('RPC error:', rpcError);
+          hideToast();
+          errorDiv.textContent = 'Password reset failed: ' + rpcError.message;
+          errorDiv.classList.remove('hidden');
+          return;
+        }
+
+        const { error: deleteError } = await db
+          .from('reset_password_with_code')
+          .delete()
+          .eq('id', resetState.codeId);
+
+        if (deleteError) {
+          console.error('Failed to delete code:', deleteError);
+        }
+
+        document.querySelectorAll('.code-input').forEach(input => {
+          input.value = '';
+        });
+        
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmNewPassword').value = '';
+
+        document.querySelectorAll('.form-input').forEach(input => {
+          input.value = '';
+        });
+
+        hideToast();
+        showToast('Password reset successful!', 'success');
+        
+        setTimeout(() => {
+          showLoginView();
+          resetState = { email: null, code: null, codeId: null };
+        }, 1500);
+
+      } catch (err) {
+        console.error('Error resetting password:', err);
+        hideToast();
+        errorDiv.textContent = 'Error resetting password';
+        errorDiv.classList.remove('hidden');
+      }
+    }
+
+    async function showAdminCodePanel() {
+      if (!currentUser || !isAdmin) {
+        showError('Admin access required');
+        return;
+      }
+
+      hideAllAuthViews();
+      document.getElementById('adminCodePanel').classList.remove('hidden');
+
+      const listDiv = document.getElementById('activeCodesList');
+      listDiv.innerHTML = '<p style="color: rgba(255,255,255,0.6);">Loading...</p>';
+
+      try {
+        const { data, error } = await db
+          .from('reset_password_with_code')
+          .select('*')
+          .eq('used', false)
+          .gt('expires_at', new Date().toISOString())
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          listDiv.innerHTML = `<p style="color: #ff6b6b;">Error: ${error.message}</p>`;
+          return;
+        }
+
+        if (data.length === 0) {
+          listDiv.innerHTML = '<p style="color: rgba(255,255,255,0.6);">No active codes</p>';
+          return;
+        }
+
+        listDiv.innerHTML = data.map(row => `
+          <div style="background: rgba(0,0,0,0.2); border-radius: 8px; padding: 12px; margin-bottom: 8px; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-family: monospace; font-size: 18px; font-weight: bold; color: #fff;">${row.code}</span>
+              <span style="font-size: 12px; color: rgba(255,255,255,0.6);">${new Date(row.expires_at).toLocaleTimeString()}</span>
+            </div>
+            <div style="font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 4px;">${row.email}</div>
+          </div>
+        `).join('');
+
+      } catch (err) {
+        listDiv.innerHTML = `<p style="color: #ff6b6b;">Error loading codes</p>`;
+      }
+    }
+
+    function backFromAdminPanel() {
+      showCodeView(resetState.code);
+    }
+
+    // Back button handler
+    function handleBackButton() {
+      const showCode = document.getElementById('showCodeView');
+      const verifyCode = document.getElementById('verifyCodeView');
+      const newPass = document.getElementById('newPasswordView');
+      const adminPanel = document.getElementById('adminCodePanel');
+      const forpass = document.getElementById('forgotPasswordView');
+      const loginView = document.getElementById('loginView');
+      const registerView = document.getElementById('registerView');
+
+      // Clear inputs based on current view
+      if (!verifyCode.classList.contains('hidden')) {
+        document.querySelectorAll('.code-input').forEach(input => input.value = '');
+      }
+
+      if (!newPass.classList.contains('hidden')) {
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmNewPassword').value = '';
+        document.querySelectorAll('.code-input').forEach(input => input.value = '');
+      }
+
+      if (!forpass.classList.contains('hidden')) {
+        document.querySelectorAll('#forgotPasswordView .form-input').forEach(input => input.value = '');
+        // Going back from forgot password should go to login, NOT to code view
+        showLoginView();
+        return;
+      }
+
+      if (!loginView.classList.contains('hidden')) {
+        document.querySelectorAll('#loginView .form-input').forEach(input => input.value = '');
+      }
+      
+      if (!adminPanel.classList.contains('hidden')) {
+        showCodeView(resetState.code);
+        return;
+      }
+      
+      if (!newPass.classList.contains('hidden')) {
+        showVerifyCodeView();
+        return;
+      }
+      
+      if (!verifyCode.classList.contains('hidden')) {
+        showCodeView(resetState.code);
+        return;
+      }
+      
+      if (!showCode.classList.contains('hidden')) {
+        // Clear the code display when leaving code view
+        document.getElementById('generatedCode').textContent = '------';
+        showForgotPasswordView();
+        return;
+      }
+
+      if (!registerView.classList.contains('hidden')) {
+        if (currentUser && isAdmin) {
+          showLoggedInView();
+        } else {
+          showLoginView();
+        }
+      } else {
+        showMainContent();
+      }
+    }
+    // function handleBackButton() {
+    //   const showCode = document.getElementById('showCodeView');
+    //   const verifyCode = document.getElementById('verifyCodeView');
+    //   const newPass = document.getElementById('newPasswordView');
+    //   const adminPanel = document.getElementById('adminCodePanel');
+    //   const forpass = document.getElementById('forgotPasswordView');
+
+    //   if (!verifyCode.classList.contains('hidden')) {
+    //     document.querySelectorAll('.code-input').forEach(input => input.value = '');
+    //   }
+
+    //   if (!newPass.classList.contains('hidden')) {
+    //     document.getElementById('newPassword').value = '';
+    //     document.getElementById('confirmNewPassword').value = '';
+    //   }
+
+    //   if (!forpass.classList.contains('hidden')) {
+    //     document.querySelectorAll('#forgotPasswordView .form-input').forEach(input => input.value = '');
+    //     return;
+    //   }
+
+    //   if (!document.getElementById('loginView').classList.contains('hidden')) {
+    //     document.querySelectorAll('#loginView .form-input').forEach(input => input.value = '');
+    //   }
+      
+    //   if (!adminPanel.classList.contains('hidden')) {
+    //     showCodeView(resetState.code);
+    //     return;
+    //   }
+      
+    //   if (!newPass.classList.contains('hidden')) {
+    //     showVerifyCodeView();
+    //     return;
+    //   }
+      
+    //   if (!verifyCode.classList.contains('hidden')) {
+    //     showCodeView(resetState.code);
+    //     return;
+    //   }
+      
+    //   if (!showCode.classList.contains('hidden')) {
+    //     showForgotPasswordView();
+    //     return;
+    //   }
+      
+    //   if (!forpass.classList.contains('hidden')) {
+    //     showLoginView();
+    //     return;
+    //   }
+
+    //   const registerView = document.getElementById('registerView');
+      
+    //   if (!registerView.classList.contains('hidden')) {
+    //     if (currentUser && isAdmin) {
+    //       showLoggedInView();
+    //     } else {
+    //       showLoginView();
+    //     }
+    //   } else {
+    //     showMainContent();
+    //   }
+    // }
+
+    // Auth state listener
+    window.addEventListener('authStateChanged', () => {
+      updateUI();
+      if (document.getElementById('card').classList.contains('auth-mode')) {
+        updateAuthView();
+      }
+    });
+
+    // Check auth on load
+    checkAuth().then(() => {
+      updateUI();
+    });
+  </script>
+</body>
+</html>
